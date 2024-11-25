@@ -1,0 +1,403 @@
+/* -------------------------------------------------------------Body----------------*/
+body {
+    font-family: Arial, sans-serif;
+    background: radial-gradient(#090110, #0b011d);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden; 
+    overflow-y: auto;
+}
+
+/* Sparkle Effect */
+@keyframes sparkle {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translate(-50%, -50%);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2) translate(-50%, -50%);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.8) translate(-50%, -50%);
+    }
+}
+
+.sparkle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; 
+    overflow: hidden;
+}
+
+.sparkle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.8); 
+    border-radius: 50%;
+    animation: sparkle 2s infinite ease-in-out;
+    opacity: 0;
+}
+
+
+.sparkle:nth-child(2n) {
+    width: 7px;
+    height: 7px;
+    animation-duration: 3s;
+}
+
+.sparkle:nth-child(3n) {
+    width: 10px;
+    height: 10px;
+    animation-duration: 4s;
+}
+
+
+
+/* -------------------------------------------------------------- HEADER --------------------*/
+.main-header {
+    text-align: center; 
+    margin-bottom: 30px; 
+    padding: 10px;
+    background-color: #200b31; 
+    color: #FFD700; 
+    border-bottom: 2px solid #000000;
+}
+
+.main-header h1 {
+    font-size: 2rem;
+    font-weight: bold; 
+    margin: 30px; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+}
+
+/* ----------------------------------------------------------------NAV BAR--------------------*/
+.navbar {
+    position: fixed;
+    top: 0; 
+    width: 100%; 
+    background-color: #200137; 
+    border-bottom: 2px solid #FFD700; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+    z-index: 1000; 
+    padding: 10px 0;
+}
+
+.navbar ul {
+    list-style: none; 
+    margin: 0;
+    padding: 0;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+}
+
+.navbar li {
+    display: inline; 
+}
+
+.navbar a {
+    text-decoration: none; 
+    font-size: 1rem;
+    color: #FFD700;
+    padding: 10px 20px;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.navbar a:hover {
+    background-color: #FFD700;
+    color: #200137;
+    border-color: #4b0082;
+}
+
+
+.back-to-top a {
+    font-weight: bold; 
+}
+
+
+/* ------------------------------------------------------Search Bar --------------------*/
+.search-bar {
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #48535e;
+    border-radius: 5px;
+    outline: none;
+}
+/* --------------------------------------------------------- Reset Button --------------------*/
+#resetButton {
+    margin-top: 5px;
+    margin-left: 0px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    background-color: #3e236f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#resetButton:hover {
+    background-color: #0056b3;
+}
+
+/* ------------------------------------------------------- Grouped Sequences Section ------------*/
+.grouped-sequences {
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+#sequences {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#sequences div {
+    background-color: #1f0432;
+
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+
+/* Center text inside sequence-item */
+.sequence-item {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #200137;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    font-size: 1.2rem;
+    text-align: center; 
+    flex-direction: column; 
+}
+
+
+/* Style for the sequence text */
+.sequence-text {
+    flex: 1;
+    font-size: 1.2rem;
+    color: #FFD700;
+}
+
+/* ----------------------------------------------------------------------Container for images next to the sequence ----------------*/
+.image-container {
+    display: grid;;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px; 
+}
+
+
+/* Style for the cloned images */
+.images-container .image-wrapper {
+    width: 100px;
+    height: auto;
+    text-align: center;
+    cursor: default;
+}
+
+.images-container .image-wrapper img {
+    width: 100%;
+    height: auto;
+    border: 2px solid #FFD700;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+}
+
+.images-container .image-wrapper img:hover {
+    transform: scale(1.05);
+    border-color: #4b0082;
+}
+
+/* Image Wrapper Styling */
+.image-wrapper {
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    width: 150px;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    transition: border 0.3s;
+}
+
+.image-wrapper.selected img {
+    border: 2px solid #2869ff;
+}
+
+
+.image-title {
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* ----------------------------------------------------------------------Side Bar ----------------*/
+
+.sidebar {
+    position: fixed;
+    left: 50px;
+    top: 100px;
+    padding: 20px;
+    color: white;
+    width: 150px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar h3 {
+    margin-bottom: 10px;
+    color: #FFD700;
+}
+/* ----------------------------------------------------------------------Filter Button ----------------*/
+.filter-btn {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #200137;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #4b0082;
+    color: #FFD700;
+}
+
+.filter-btn:focus {
+    background-color: rgb(25, 56, 168);
+  }
+
+/* ----------------------------------------------------------------------Gif Button----------------*/
+.show-gif-button {
+    background-color: #4b0082;
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    margin-left: 350px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.show-gif-button:hover {
+    background-color: #FFD700;
+}
+
+/* Style for the gif container */
+.gif-container {
+    margin-top: 20px;
+    margin-left: 230px;
+    padding: 10px;
+    background-color: #200137;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+
+/* ----------------------------------------------------------------------Footer ----------------*/
+.main-footer {
+    background-color: #200137; /* Dark background for the footer */
+    color: #FFD700; /* Gold text color */
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+    border-top: 2px solid #FFD700; /* Optional: top border for separation */
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column; /* Default layout for small screens */
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-content .registration {
+    text-align: center;
+}
+
+.footer-content .registration h3 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.footer-content .registration form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-content .registration input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #FFD700;
+    border-radius: 5px;
+    outline: none;
+    width: 250px;
+}
+
+.footer-content .registration button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #FFD700;
+    color: #200137;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.footer-content .registration button:hover {
+    background-color: #4b0082; /* Darker background for hover effect */
+    color: #FFD700;
+}
+
+.footer-content .credits {
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.footer-content .credits p {
+    margin: 5px 0;
+}

@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glyphing Search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header id="top" class="main-header">
+        <h1>Imagine A Name Here</h1>
+    </header>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="https://ingress.fandom.com/wiki/Glyphs" target="_blank">Ingress Wiki</a></li>
+    
+            <li class="back-to-top"><a href="#top">Back to Top</a></li>
+        </ul>
+    </nav>
+    
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search glyphs...">
+        <button id="resetButton">Reset Selection</button>
+    </div>
+
+    <div class="sidebar">
+        <h3>Filter Sequences</h3>
+        <button class="filter-btn" data-length="1">1 Glyphs</button>
+        <button class="filter-btn" data-length="2">2 Glyphs</button>
+        <button class="filter-btn" data-length="3">3 Glpyhs</button>
+        <button class="filter-btn" data-length="4">4 Glpyhs</button>
+        <button class="filter-btn" data-length="5">5 Glpyhs</button>
+    </div>
+
+    <!-- Sequence Section -->
+    <div class="grouped-sequences">
+        <h3>Potential Sequences</h3>
+        <div id="sequences"></div>
+    </div>
+    
+<div class="sequence-images-container"></div>
+    <!--Image Containers-->
+    <div class="selected-images-container">
+    </div>
+    
+
+    <div class="image-container">
+        <div class="image-wrapper" data-index="1">
+            <span class="image-title">Abandon</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/ac/Abandon_Glyph.png/revision/latest?cb=20210307182349" alt="'Abandon' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="2">
+            <span class="image-title">Accept/Open</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/3/30/Accept-Open_Glyph.png/revision/latest?cb=20210307182406" alt="'Accept - Open' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="3">
+            <span class="image-title">Adapt</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/26/Adapt_Glyph.png/revision/latest?cb=20210307182425" alt="'Adapt' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="4">
+            <span class="image-title">Advance</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/e2/Advance_Glyph.png/revision/latest?cb=20210307182450" alt="'Advance' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="5">
+            <span class="image-title">After</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/ae/After_Glyph.png/revision/latest?cb=20210307182538" alt="'After' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="6">
+            <span class="image-title">Again/Repeat</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/aa/Again-Repeat_Glyph.png/revision/latest?cb=20210307182557" alt="'Again - Repeat' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="7">
+            <span class="image-title">All</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/1/19/All_Glyph.png/revision/latest?cb=20210307182619" alt="'Again - Repeat' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="8">
+            <span class="image-title">Answer</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/3/33/Answer_Glyph.png/revision/latest?cb=20210307182645" alt="Again - 'Answer' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="9">
+            <span class="image-title">Attack/War</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/0/0c/Attack-War_Glyph.png/revision/latest?cb=20210307182657" alt="Again - 'Attack - War' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="10">
+            <span class="image-title">Avoid</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/5c/Avoid_Glyph.png/revision/latest?cb=20210307182710" alt="'Avoid' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="11">
+            <span class="image-title">Balance/Perfection</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/94/Balance-Perfection_Glyph.png/revision/latest?cb=20210307182723" alt="'Balance - Perfection' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="12">
+            <span class="image-title">Barrier</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/4a/Barrier_Glyph.png/revision/latest?cb=20210307182736" alt="'Barrier' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="13">
+            <span class="image-title">Before</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/23/Before_Glyph.png/revision/latest?cb=20210307182749" alt="'Before' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="14">
+            <span class="image-title">Begin</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/6/69/Begin_Glyph.png/revision/latest?cb=20210307182827" alt="'Begin' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="15">
+            <span class="image-title">Being/Human</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/51/Being-Human_Glyph.png/revision/latest?cb=20210307182846" alt="'Being - Human' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="16">
+            <span class="image-title">Body</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/b/bb/Body_Glyph.png/revision/latest?cb=20210307182900" alt="'Body' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="17">
+            <span class="image-title">Breathe/Live</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/a8/Breathe-Live_Glyph.png/revision/latest?cb=20210307182912" alt="'Breathe' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="18">
+            <span class="image-title">Capture</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/d4/Capture_Glyph.png/revision/latest?cb=20210307182925" alt="'Capture' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+        <div class="image-wrapper" data-index="19">
+            <span class="image-title">Change</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/98/Change_Glyph.png/revision/latest?cb=20210307183015" alt="'Change' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="20">
+            <span class="image-title">Chaos</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/97/Chaos_Glyph.png/revision/latest?cb=20210307183028" alt="'Chaos' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="21">
+            <span class="image-title">Cilvilization</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/70/Civilization_Glyph.png/revision/latest?cb=20210307183040" alt="'Cilvilization' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+        <div class="image-wrapper" data-index="22">
+            <span class="image-title">Cilvilization</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/70/Civilization_Glyph.png/revision/latest?cb=20210307183040" alt="'Cilvilization' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="23">
+            <span class="image-title">Clear</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/0/05/Clear_Glyph.png/revision/latest?cb=20210307183123" alt="'Clear' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="24">
+            <span class="image-title">Clear All</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/1/1c/Clear_All_Glyph.png/revision/latest?cb=20210307183107" alt="'Clear All' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+        <div class="image-wrapper" data-index="25">
+            <span class="image-title">Collective/Shapers</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/c/c9/Collective-Shapers_Glyph.png/revision/latest?cb=20210307183145" alt="'Collective - Shapers' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="26">
+            <span class="image-title">Complex</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/d7/Complex_Glyph.png/revision/latest?cb=20210307183200" alt="'Complex' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="27">
+            <span class="image-title">Conflict</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/e1/Conflict_Glyph.png/revision/latest?cb=20210307183214" alt="'Conflict' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="28">
+            <span class="image-title">Consequence</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/eb/Consequence_Glyph.png/revision/latest?cb=20210307183227" alt="'Consequence' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="29">
+            <span class="image-title">Contemplate</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/3/39/Contemplate_Glyph.png/revision/latest?cb=20210307183241" alt="'Contemplate' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="30">
+            <span class="image-title">Courage</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/8/8a/Courage_Glyph.png/revision/latest?cb=20210307183313" alt="'Courage' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="31">
+            <span class="image-title">Create</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/6/68/Create_Glyph.png/revision/latest?cb=20210307183328" alt="'Create' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="32">
+            <span class="image-title">Creativity/Idea/Thought</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/77/Creativity-Idea-Thought_Glyph.png/revision/latest?cb=20210307183345" alt="'Creativity-Idea-Thought' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="33">
+            <span class="image-title">Danger</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/4c/Danger_Glyph.png/revision/latest?cb=20210307183423" alt="'Danger' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+        <div class="image-wrapper" data-index="34">
+            <span class="image-title">Data</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/42/Data_Glyph.png/revision/latest?cb=20210307183436" alt="'Data' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+        <div class="image-wrapper" data-index="35">
+            <span class="image-title">Defend</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/b/ba/Defend_Glyph.png/revision/latest?cb=20210307183506" alt="'Defend' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+        <div class="image-wrapper" data-index="36">
+            <span class="image-title">Destination</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/a9/Destination_Glyph.png/revision/latest?cb=20210307183520" alt="'Destination' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+        <div class="image-wrapper" data-index="37">
+            <span class="image-title">Destiny</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/93/Destiny_Glyph.png/revision/latest?cb=20210307183530" alt="'Destiny' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="38">
+            <span class="image-title">Destroy</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/46/Destroy_Glyph.png/revision/latest?cb=20210307183552" alt="'Destroy' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="39">
+            <span class="image-title">Deteriorate</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/9a/Deteriorate_Glyph.png/revision/latest?cb=20210307183644" alt="'Deteriorate' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="40">
+            <span class="image-title">Death/Die</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/92/Death-Die_Glyph.png/revision/latest?cb=20210307183451" alt="'Death/Die' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="41">
+            <span class="image-title">Difficult</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/de/Difficult_Glyph.png/revision/latest?cb=20210307183657" alt="'Difficult' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="42">
+            <span class="image-title">Discover</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/6/6d/Discover_Glyph.png/revision/latest?cb=20210307183710" alt="'Discover' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="43">
+            <span class="image-title">Distance/Outside</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/98/Distance-Outside_Glyph.png/revision/latest?cb=20210307183722" alt="'Distance/Outside' Glyph">
+            <span class="number-badge"></span>
+        </div>
+
+        <div class="image-wrapper" data-index="44">
+            <span class="image-title">Easy</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/24/Easy_Glyph.png/revision/latest?cb=20210307183747" alt="'Easy' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+
+        <div class="image-wrapper" data-index="45">
+            <span class="image-title">End</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/d3/End_Glyph.png/revision/latest?cb=20210307183800" alt="'End' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+
+        <div class="image-wrapper" data-index="464">
+            <span class="image-title">Enlightened/Enlightenment</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/0/01/Enlightened-Enlightenment_Glyph.png/revision/latest?cb=20210307183813" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+
+        <div class="image-wrapper" data-index="47">
+            <span class="image-title">Equal</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/23/Equal_Glyph.png/revision/latest?cb=20210307183844" alt="'Equal' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+
+        <div class="image-wrapper" data-index="48">
+            <span class="image-title">Escape</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/ec/Escape_Glyph.png/revision/latest?cb=20210307183901" alt="'Escape' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        
+        <div class="image-wrapper" data-index="49">
+            <span class="image-title">Evolution/Progress/Success</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/db/Evolution-Progress-Success_Glyph.png/revision/latest?cb=20210307183913" alt="'Evolution/Progress/Success' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="50">
+            <span class="image-title">Failure</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/db/Failure_Glyph.png/revision/latest?cb=20210307183924" alt="'Failure' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="51">
+            <span class="image-title">Fear</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/a1/Fear_Glyph.png/revision/latest?cb=20210307183939" alt="'Fear' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="52">
+            <span class="image-title">Field</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/44/Field_Glyph.png/revision/latest?cb=20210307183953" alt="'Field' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="53">
+            <span class="image-title">Follow</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/1/13/Follow_Glyph.png/revision/latest?cb=20210307184006" alt="'Follow' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="54">
+            <span class="image-title">Forget</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/1/19/Forget_Glyph.png/revision/latest?cb=20210307184017" alt="'Forget' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="55">
+            <span class="image-title">Future</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/44/Future_Glyph.png/revision/latest?cb=20210307184031" alt="'Future' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="56">
+            <span class="image-title">Gain</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/45/Gain_Glyph.png/revision/latest?cb=20210307184047" alt="'Gain' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="57">
+            <span class="image-title">Grow</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/4c/Grow_Glyph.png/revision/latest?cb=20210307184103" alt="'Grow' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="58">
+            <span class="image-title">Harm</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/c/c4/Harm_Glyph.png/revision/latest?cb=20210307184118" alt="'Harm' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="59">
+            <span class="image-title">Harmony/Peace</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/28/Harmony-Peace_Glyph.png/revision/latest?cb=20210307184128" alt="'Harmony/Peace' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="60">
+            <span class="image-title">Have</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/9d/Have_Glyph.png/revision/latest?cb=20210307184139" alt="'Have' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="61">
+            <span class="image-title">Help</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/99/Help_Glyph.png/revision/latest?cb=20210307184151" alt="'Help' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="62">
+            <span class="image-title">Hide</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/21/Hide_Glyph.png/revision/latest?cb=20210307184200" alt="'Hide' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="63">
+            <span class="image-title">I/Me</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/5a/I-Me_Glyph.png/revision/latest?cb=20210307184256" alt="'I/Me' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="64">
+            <span class="image-title">Ignore</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/1/16/Ignore_Glyph.png/revision/latest?cb=20210307184216" alt="'Ignore' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="65">
+            <span class="image-title">Imperfect<span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/3/36/Imperfect_Glyph.png/revision/latest?cb=20210307184324" alt="'Imperfect' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="66">
+            <span class="image-title">Improve</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/2e/Improve_Glyph.png/revision/latest?cb=20210307184337" alt="'Improve' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="67">
+            <span class="image-title">Impure</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/90/Impure_Glyph.png/revision/latest?cb=20210307184348" alt="'Impure' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="68">
+            <span class="image-title">Individual/Self</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/51/Individual-Self_Glyph.png/revision/latest?cb=20210307184413" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="69">
+            <span class="image-title">Inside/Not</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/5e/Inside-Not_Glyph.png/revision/latest?cb=20210307184441" alt="'Inside/Not' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="70">
+            <span class="image-title">Intelligence</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/f/f4/Intelligence_Glyph.png/revision/latest?cb=20210307184615" alt="'Intelligence' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="71">
+            <span class="image-title">Interrupt</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/d8/Interrupt_Glyph.png/revision/latest?cb=20210307184630" alt="'Interrupt' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="72">
+            <span class="image-title">Journey</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/a2/Journey_Glyph.png/revision/latest?cb=20210307184640" alt="'Journey' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="73">
+            <span class="image-title">Key</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/f/f3/Key_Glyph.png/revision/latest?cb=20210307184652" alt="'Key' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="74">
+            <span class="image-title">Knowledge</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/f/ff/Knowledge_Glyph.png/revision/latest?cb=20210307184704" alt="'KNowledge' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="75">
+            <span class="image-title">Lead</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/42/Lead_Glyph.png/revision/latest?cb=20210307184721" alt="'Lead' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="76">
+            <span class="image-title">Legacy</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/2a/Legacy_Glyph.png/revision/latest?cb=20210307184744" alt="'Legacy' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="77">
+            <span class="image-title">Less</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/8/86/Less_Glyph.png/revision/latest?cb=20210307184801" alt="'Less' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="78">
+            <span class="image-title">Liberate</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/b/b7/Liberate_Glyph.png/revision/latest?cb=20210307184825" alt="'Liberate' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="79">
+            <span class="image-title">Lie</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/3/36/Lie_Glyph.png/revision/latest?cb=20210307184836" alt="'Lie' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="80">
+            <span class="image-title">Link</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/e8/Link_Glyph.png/revision/latest?cb=20210307184846" alt="'Link' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="81">
+            <span class="image-title">Live/Again/Reincarnate</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/6/63/Live_Again-Reincarnate_Glyph.png/revision/latest?cb=20210307185002" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="82">
+            <span class="image-title">Lose</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/90/Lose_Glyph.png/revision/latest?cb=20210307185030" alt="'Lose' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="83">
+            <span class="image-title">Message</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/49/Message_Glyph.png/revision/latest?cb=20210307185049" alt="'Message' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="84">
+            <span class="image-title">Mind</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/f/f0/Mind_Glyph.png/revision/latest?cb=20210307185100" alt="'Mind' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="85">
+            <span class="image-title">More</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/7f/More_Glyph.png/revision/latest?cb=20210307185120" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="86">
+            <span class="image-title">Mystery</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/f/fd/Mystery_Glyph.png/revision/latest?cb=20210307185135" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="87">
+            <span class="image-title">Nature</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/44/Nature_Glyph.png/revision/latest?cb=20210307185148" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="88">
+            <span class="image-title">New</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/4a/New_Glyph.png/revision/latest?cb=20210307185330" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="89">
+            <span class="image-title">N'zeer</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/1/18/N%27Zeer_Glyph.png/revision/latest?cb=20210307185453" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="90">
+            <span class="image-title">Nemesis</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/6/6a/Nemesis_Glyph.png/revision/latest?cb=20210307185309" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="91">
+            <span class="image-title">Nourish</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/73/Nourish_Glyph.png/revision/latest?cb=20210307185340" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="92">
+            <span class="image-title">Now/Present</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/99/Now-Present_Glyph.png/revision/latest?cb=20210307185440" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="93">
+            <span class="image-title">Old</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/24/Old_Glyph.png/revision/latest?cb=20210307185509" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="94">
+            <span class="image-title">Open All</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/8/84/Open_All_Glyph.png/revision/latest?cb=20210307185519" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="95">
+            <span class="image-title">Osiris</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/2f/Osiris_Glyph.png/revision/latest?cb=20210307185529" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="96">
+            <span class="image-title">Past</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/40/Past_Glyph.png/revision/latest?cb=20210307185552" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="97">
+            <span class="image-title">Path</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/e6/Path_Glyph.png/revision/latest?cb=20210307185605" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="98">
+            <span class="image-title">Perspective</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/21/Perspective_Glyph.png/revision/latest?cb=20210307185616" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="99">
+            <span class="image-title">Portal</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/f/fc/Portal_Glyph.png/revision/latest?cb=20210307185634" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="100">
+            <span class="image-title">Potential</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/ab/Potential_Glyph.png/revision/latest?cb=20210307185657" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="101">
+            <span class="image-title">Presence</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/76/Presence_Glyph.png/revision/latest?cb=20210307185716" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="102">
+            <span class="image-title">Pure</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/ee/Pure_Glyph.png/revision/latest?cb=20210307185729" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="103">
+            <span class="image-title">Pursue</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/0/07/Pursue_Glyph.png/revision/latest?cb=20210307185740" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="104">
+            <span class="image-title">Question</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/8/8a/Question_Glyph.png/revision/latest?cb=20210307185751" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="105">
+            <span class="image-title">React</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/21/React_Glyph.png/revision/latest?cb=20210307185804" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="106">
+            <span class="image-title">Rebel</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/d1/Rebel_Glyph.png/revision/latest?cb=20210307185816" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="107">
+            <span class="image-title">Recharge/Repair</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/ec/Recharge-Repair_Glyph.png/revision/latest?cb=20210307185828" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="108">
+            <span class="image-title">Resistance/Struggle</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/54/Resistance-Struggle_Glyph.png/revision/latest?cb=20210307185839" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="109">
+            <span class="image-title">Restraint</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/5e/Restraint_Glyph.png/revision/latest?cb=20210307185853" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="110">
+            <span class="image-title">Retreat</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/41/Retreat_Glyph.png/revision/latest?cb=20210307185908" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="111">
+            <span class="image-title">Safety</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/77/Safety_Glyph.png/revision/latest?cb=20210307185925" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="112">
+            <span class="image-title">Save</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/3/30/Save_Glyph.png/revision/latest?cb=20210307185935" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="112">
+            <span class="image-title">Search</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/6/62/Search_Glyph.png/revision/latest?cb=20210307185945" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="113">
+            <span class="image-title">See</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/a4/See_Glyph.png/revision/latest?cb=20210307185957" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="114">
+            <span class="image-title">Separate</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/a/a3/Separate_Glyph.png/revision/latest?cb=20210307190023" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="115">
+            <span class="image-title">Share</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/79/Share_Glyph.png/revision/latest?cb=20210307190034" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="116">
+            <span class="image-title">Shield</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/8/82/Shield_Glyph.png/revision/latest?cb=20210307190101" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="117">
+            <span class="image-title">Simple</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/8/82/Simple_Glyph.png/revision/latest?cb=20210307190114" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="118">
+            <span class="image-title">Soul</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/ee/Soul_Glyph.png/revision/latest?cb=20210307190127" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="119">
+            <span class="image-title">Speed</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/c/c3/Speed_Glyph.png/revision/latest?cb=20241113024208" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="120">
+            <span class="image-title">Stability/Stay</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/55/Stability-Stay_Glyph.png/revision/latest?cb=20210307190140" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="121">
+            <span class="image-title">Star</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/c/c7/Star_Glyph.png/revision/latest?cb=20210307190151" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="122">
+            <span class="image-title">Strong</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/b/b9/Strong_Glyph.png/revision/latest?cb=20210307190206" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="123">
+            <span class="image-title">Technology</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/7c/Technology_Glyph.png/revision/latest?cb=20210307190227" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="124">
+            <span class="image-title">Them</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/78/Them_Glyph.png/revision/latest?cb=20210307181448" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="125">
+            <span class="image-title">Together</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/41/Together_Glyph.png/revision/latest?cb=20210307190242" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="126">
+            <span class="image-title">Truth</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/d/d6/Truth_Glyph.png/revision/latest?cb=20210307190252" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="127">
+            <span class="image-title">Unbounded</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/e/e7/Unbounded_Glyph.png/revision/latest?cb=20210307190307" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="128">
+            <span class="image-title">Us/We</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/b/b1/Us-We_Glyph.png/revision/latest?cb=20210307190329" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="129">
+            <span class="image-title">Use</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/0/04/Use_Glyph.png/revision/latest?cb=20210307190318" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="130">
+            <span class="image-title">Victory</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/9/9f/Victory_Glyph.png/revision/latest?cb=20210307190356" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="131">
+            <span class="image-title">Want</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/1/10/Want_Glyph.png/revision/latest?cb=20210307190405" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="132">
+            <span class="image-title">Weak</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/4/4d/Weak_Glyph.png/revision/latest?cb=20210307190419" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="133">
+            <span class="image-title">Worth</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/2/2e/Worth_Glyph.png/revision/latest?cb=20210307190431" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="134">
+            <span class="image-title">XM</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/7/7b/XM_Glyph.png/revision/latest?cb=20210307190444" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+        <div class="image-wrapper" data-index="135">
+            <span class="image-title">You/Your</span>
+            <img src="https://static.wikia.nocookie.net/ingress/images/5/5d/You-Your_Glyph.png/revision/latest?cb=20210307185540" alt="'' Glyph">
+            <span class="number-badge"></span>
+        </div>
+    </div>
+
+   <!-- Sequence Images Display -->
+   <div class="sequence-images-container"></div>
+
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="credits">
+            <p>Created by @Pumpkabowo</p>
+            <p>&copy; 2024 All Rights Reserved</p>
+        </div>
+    </div>
+</footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
