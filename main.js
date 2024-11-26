@@ -1143,6 +1143,20 @@ function displayMatchingSequences(matchingSequences) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    // Select all images within the page
+    const images = document.querySelectorAll('img'); // Adjust selector to target the specific images you want
+
+    images.forEach(image => {
+        image.addEventListener('click', () => {
+            // Scroll to the top of the page
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // Smooth scrolling effect
+            });
+        });
+    });
+});
 
 
 
