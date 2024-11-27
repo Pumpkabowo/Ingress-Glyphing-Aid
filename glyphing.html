@@ -1,791 +1,1209 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glyphing Search</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+const maxSelections = 5;
+let selectedImages = [];
+let groupedSequences = [];
 
-<body>
-    <header id="top" class="main-header">
-        <h1>Imagine A Name Here</h1>
-    </header>
+//--------------------------------------------------SPARKLE PAGE EFFECT----------------------------------------------------------------------------------------------SPARKLE PAGE EFFECT
+document.addEventListener('DOMContentLoaded', () => {
+    const sparkleContainer = document.createElement('div');
+    sparkleContainer.classList.add('sparkle-container');
+    document.body.appendChild(sparkleContainer);
 
-    <nav class="navbar">
-        <ul>
-            <li><a href="https://ingress.fandom.com/wiki/Glyphs" target="_blank">Ingress Wiki</a></li>
+    // Create multiple sparkles
+    for (let i = 0; i < 100; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+
+        // Randomize position and animation delay
+        sparkle.style.left = `${Math.random() * 100}%`;
+        sparkle.style.top = `${Math.random() * 100}%`;
+        sparkle.style.animationDelay = `${Math.random() * 5}s`;
+
+        sparkleContainer.appendChild(sparkle);
+    }
+});
+
+//------------------------------------------------------------------------------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const sequencesMap = new Map();
     
-            <li class="back-to-top"><a href="#top">Back to Top</a></li>
-        </ul>
-    </nav>
+    // Map sentences to their images for quick lookup
+    sequences.forEach(sequence => {
+        sequencesMap.set(sequence.sentence, sequence.images);
+    });
+
+    // Select all images and add click listeners
+    const images = document.querySelectorAll('.sequence-item img');
+
+    images.forEach(image => {
+        image.addEventListener('click', () => {
+            const sequenceName = image.dataset.sequence; // Get the sequence name
+            const relatedImages = sequencesMap.get(sequenceName); // Get all images in the sequence
+
+            if (relatedImages) {
+                const displayContainer = document.querySelector('.sequence-images-container');
+                displayContainer.innerHTML = ''; // Clear previous content
+
+                // Add all related images to the container
+                relatedImages.forEach(imgSrc => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgSrc;
+                    imgElement.alt = `Image from ${sequenceName}`;
+                    imgElement.style.margin = '10px'; // Optional: Styling for spacing
+                    imgElement.style.maxWidth = '100px'; // Optional: Limit image size
+                    displayContainer.appendChild(imgElement);
+                });
+
+                // Scroll to the top (optional)
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    });
+});
+// ------------------------------- Handle image click to show potential sequences------------------------------------------------------------------------
+document.querySelectorAll('.image-wrapper').forEach(wrapper => {
+    wrapper.addEventListener('click', () => {
+        const clickedImageName = wrapper.querySelector('.image-title').textContent;
+        const matchingSequences = getSequencesForImage(clickedImageName);
+        displayMatchingSequences(matchingSequences);
+    });
+});
+
+// -------------------------------Function to get sequences that contain the selected image------------------------------------------------------------------------
+function getSequencesForImage(image) {
+    return sequences.filter(seq => seq.images.includes(image));
+}
+
+// --------------------------------Function to display matching sequences------------------------------------------------------------------------
+function displayMatchingSequences(matchingSequences) {
+    const sequenceContainer = document.getElementById('sequences');
+    sequenceContainer.innerHTML = ''; // Clear previous sequences
+
+    if (matchingSequences.length > 0) {
+        matchingSequences.forEach(seq => {
+            const div = document.createElement('div');
+            div.textContent = seq.sentence;
+            div.classList.add('sequence-item'); // Add a class for styling
+            div.addEventListener('click', () => {
+                showImagesForSequence(seq.images); // Display corresponding images
+            });
+            sequenceContainer.appendChild(div);
+        });
+    } else {
+        const div = document.createElement('div');
+        div.textContent = "No sequences found for this image.";
+        sequenceContainer.appendChild(div);
+    }
+}
+
+// -------------------------------------Function to display images for the selected sequence------------------------------------------------------------------------
+function showImagesForSequence(imageTitles) {
+    const imageContainer = document.querySelector('.image-container');
+    imageContainer.innerHTML = ''; // Clear current images
+
+    imageTitles.forEach(title => {
+        const matchingWrapper = Array.from(document.querySelectorAll('.image-wrapper'))
+            .find(wrapper => wrapper.querySelector('.image-title').textContent.trim() === title.trim());
+
+        if (matchingWrapper) {
+            imageContainer.appendChild(matchingWrapper.cloneNode(true)); // Add the image to the container
+        }
+    });
+
     
+}
 
-    <!-- Search Bar -->
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search glyphs...">
-        <button id="resetButton">Reset Selection</button>
-    </div>
+//--------------------------------------------RESET BUTTON LOGIC------------------------------------------------------------------------
+document.getElementById('resetButton').addEventListener('click', () => {
+    selectedImages = [];
+    groupedSequences = [];
+    document.querySelectorAll('.image-wrapper').forEach(wrapper => {
+        wrapper.classList.remove('selected');
+        wrapper.querySelector('.number-badge').style.visibility = 'hidden';
+    });
+    const sequenceContainer = document.getElementById('sequences');
+    sequenceContainer.innerHTML = ''; // Clear sequences
+    document.getElementById('searchInput').value = ''; // Clear search bar
+    filterImages(); // Reset image display after search bar reset
+});
+document.getElementById('resetButton').addEventListener('click', () => {
+    // Reload the page to reset it to its initial state
+    location.reload();
+});
 
-    <div class="sidebar">
-        <h3>Filter Sequences</h3>
-        <button class="filter-btn" data-length="1">1 Glyphs</button>
-        <button class="filter-btn" data-length="2">2 Glyphs</button>
-        <button class="filter-btn" data-length="3">3 Glpyhs</button>
-        <button class="filter-btn" data-length="4">4 Glpyhs</button>
-        <button class="filter-btn" data-length="5">5 Glpyhs</button>
-    </div>
+//-------------------------------------------------------Group images into sequences------------------------------------------------------------------------
+function groupImages() {
+    if (selectedImages.length >= 2) {
+        groupedSequences.push([...selectedImages]);
+        selectedImages = [];
+        updateNumbering();
+        updateGroupedSequences();
+    }
+}
 
-    <!-- Sequence Section -->
-    <div class="grouped-sequences">
-        <h3>Potential Sequences</h3>
-        <div id="sequences"></div>
-    </div>
+// Update grouped sequences display
+function updateGroupedSequences() {
+    const sequenceContainer = document.getElementById('sequences');
+    sequenceContainer.innerHTML = '';
+    groupedSequences.forEach((sequence, idx) => {
+        const div = document.createElement('div');
+        div.textContent = `Sequence ${idx + 1}: ${sequence.join(', ')}`;
+        sequenceContainer.appendChild(div);
+    });
+}
+
+
+const sequences = [
+    {
+        sentence: "Abandon - Fear",
+        images: ["Abandon", "Fear"]
+    },
+    {
+        sentence: "Adapt - Technology",
+        images: ["Adapt", "Technology"]
+    },
+    {
+        sentence: "All - Chaos",
+        images: ["All", "Chaos"]
+    },
+    {
+        sentence: "Attack/War - Chaos",
+        images: ["Attack/War", "Chaos"]
+    },
+    {
+        sentence: "Attack/War - Difficult",
+        images: ["Attack/War", "Difficult"]
+    },
+    {
+        sentence: "Capture - Portal",
+        images: ["Capture", "Portal"]
+    },
+    {
+        sentence: "Change - Perspective",
+        images: ["Change", "Perspective"]
+    },
+    {
+        sentence: "Civilization - Chaos",
+        images: ["Civilization", "Chaos"]
+    },
+    {
+        sentence: "Clear - Consequence",
+        images: ["Clear", "Consequence"]
+    },
+    {
+        sentence: "Clear All - Link",
+        images: ["Clear All", "Link"]
+    },
+    {
+        sentence: "Create - Danger",
+        images: ["Create", "Danger"]
+    },
+    {
+        sentence: "Destroy - Live/Again/Reincarate",
+        images: ["Destroy", "Live/Again/Reincarate"]
+    },
+    {
+        sentence: "Discover - Key",
+        images: ["Discover", "Key"]
+    },
+    {
+        sentence: "Discover - Lie",
+        images: ["Discover", "Lie"]
+    },
+    {
+        sentence: "Discover - Saftey",
+        images: ["Discover", "Saftey"]
+    },
+    {
+        sentence: "Field - All",
+        images: ["Field", "All"]
+    },
+    {
+        sentence: "Future - Destination",
+        images: ["Future", "Destination"]
+    },
+    {
+        sentence: "Help - Them",
+        images: ["Help", "Them"]
+    },
+    {
+        sentence: "Interrupt - Evolution/Progress/Success",
+        images: ["Interrupt", "Evolution/Progress/Success"]
+    },
+    {
+        sentence: "Key - Link",
+        images: ["Key", "Link"]
+    },
+    {
+        sentence: "Lead - Enlightened/Enlightenment",
+        images: ["Lead", "Enlightened/Enlightenment"]
+    },
+    {
+        sentence: "Liberate - XM",
+        images: ["Liberate", "XM"]
     
-<div class="sequence-images-container"></div>
-    <!--Image Containers-->
-    <div class="selected-images-container">
-    </div>
+    },
+    {
+        sentence: "Link - Field",
+        images: ["Link", "Field"]
+    },
+    {
+        sentence: "Nourish - Journey",
+        images: ["Nourish", "Journey"]
+    },
+    {
+        sentence: "Open All - Truth",
+        images: ["Open All", "Truth"]
+    },
+    {
+        sentence: "Path - Balance/Perfection",
+        images: ["Path", "Balance/Perfection"]
+    },
+    {
+        sentence: "Portal - Presence",
+        images: ["Portal", "Presence"]
+    },
+    {
+        sentence: "Pure - Being/Human",
+        images: ["Pure", "Being/Human"]
+    },
+
+    {
+        sentence: "Question - Attack/War",
+        images: ["Question", "Attack/War"]
+    },
+    {
+        sentence: "Search - Past",
+        images: ["Search", "Past"]
+    },
+    {
+        sentence: "Separate - Potential",
+        images: ["Separate", "Potential"]
+    },
+    {
+        sentence: "Separate - Attack/War",
+        images: ["Separate", "Attack/War"]
+    },
+    {
+        sentence: "Sheild - Mind",
+        images: ["Sheild", "Mind"]
+    },
+    {
+        sentence: "Shield - Portal",
+        images: ["Shield", "Portal"]
+    },
+    {
+        sentence: "Star - Nature",
+        images: ["Star", "Nature"]
+    },
+    {
+        sentence: "You/Your - Adapt",
+        images: ["You/Your", "Adapt"]
+    },
+{
+    sentence: "Abandon - Fear - Together",
+    images: ["Anandon", "Fear", "Together"]
+},
+{
+    sentence: "Accept/Open - Being/Human - Weak",
+    images: ["Accept/Open", "Being/Human", "Weak"]
+},
+{
+    sentence: "Advance - Pure - Truth",
+    images: ["Advance", "Pure", "Truth"]
+},
+{
+    sentence: "All - Civilization - Chaos",
+    images: ["All", "Civilization", "Chaos"]
+},
+{
+    sentence: "Answer - N'zeer - Question",
+    images: ["Answer", "N'zeer", "Question"]
+},
+{
+    sentence: "Attack/War - Capture - Link",
+    images: ["Attack/War", "Capture", "Link"]
+},
+{
+    sentence: "Attack/War - Collective/Shapers - Chaos",
+    images: ["Attack/War", "Collective/Shapers", "Chaos"]
+},
+{
+    sentence: "Avoid - Chaos- Soul",
+    images: ["Avoid", "Chaos", "Soul"]
+},
+{
+    sentence: "Avoid - Destiny- Lie",
+    images: ["Avoid", "Destiny", "Lie"]
+},
+
+{
+    sentence: "Avoid - Pure - Chaos",
+    images: ["Avoid", "Pure", "Chaos"]
+},
+{
+    sentence: "Begin - New - Resistance/Struggle",
+    images: ["Begin", "New", "Struggle"]
+},
+{
+    sentence: "Capture - Victory - Together",
+    images: ["Capture", "Victory", "Together"]
+},
+{
+    sentence: "Change - Perspective - Technology",
+    images: ["Change", "Perspective", "Technology"]
+},
+{
+    sentence: "Clear - You/Your - Mind",
+    images: ["Clear", "You/Your", "Mind"]
+},
+{
+    sentence: "Conflict - Grow - Attack/War",
+    images: ["Conflict", "Grow", "Attack/War"]
+},
+{
+    sentence: "Courage - Destiny- Rebel",
+    images: ["Courage", "Destiny", "Rebel"]
+},
+{
+    sentence: "Create - Truth- Legacy",
+    images: ["Create", "Truth", "Legacy"]
+},
+{
+    sentence: "Danger - Change - Past",
+    images: ["Danger", "Change", "Past"]
+},
+{
+    sentence: "Defend - Being/Human - Lie",
+    images: ["Defend", "Being/Human", "Lie"]
+},
+{
+    sentence: "Destroy - Difficult- Barrier",
+    images: ["Destroy", "Difficult", "Barrier"]
+},
+{
+    sentence: "Destroy - Impure - Truth",
+    images: ["Destroy", "Impure", "Truth"]
+},
+{
+    sentence: "Destroy - Portal- Shield ",
+    images: ["Destroy", "Portal", "Shield"]
+},
+{
+    sentence: "Discover - Resistance/Struggle - Truth",
+    images: ["Discover", "Resistance/Struggle", "Truth"]
+},
+{
+    sentence: "Destroy - Collective/Shapers - Enlightened/Enlightenment ",
+    images: ["Destroy", "Collective/Shapers", "Enlightened/Enlightenment"]
+},
+{
+    sentence: "Discover - Collective/Shapers - Lie ",
+    images: ["Discover", "Collective/Shapers", "Lie"]
+},
+{
+    sentence: "Discover - Collective/Shapers- Message ",
+    images: ["Discover", "Collective/Shapers", "Message"]
+},
+{
+    sentence: "Escape - Impure - Evolution/Progress/Success ",
+    images: ["Escape", "Impure", "Evolution/Progress/Success"]
+},
+{
+    sentence: "Escape - Impure- Future ",
+    images: ["Escape", "Impure", "Future"]
+},
+{
+    sentence: "Fear - Imperfect - Technology ",
+    images: ["Fear", "Imperfect", "Technology"]
+},
+{
+    sentence: "Field - All - Mind ",
+    images: ["Field", "All", "Mind"]
+},
+{
+    sentence: "Field - Imperfect - Technology ",
+    images: ["Field", "Imperfect", "Technology"]
+},
+{
+    sentence: "Field - Nourish - Civilization ",
+    images: ["Field", "Nourish", "Civilizaiton"]
+},
+{
+    sentence: "Follow - Pure - Journey ",
+    images: ["Follow", "Pure", "Journey"]
+},
+{
+    sentence: "Gain - More - Knowledge ",
+    images: ["Gain", "More", "Knowledge"]
+},
+{
+    sentence: "Grow - Collective/Shapers - Presence ",
+    images: ["Grow", "Collective/Shapers", "Presence"]
+},
+{
+    sentence: "Harm - Danger - Avoid ",
+    images: ["Harm", "Danger", "Avoid"]
+},
+{
+    sentence: "Help - Us/We - All ",
+    images: ["Help", "Us/We", "All"]
+},
+{
+    sentence: "Being/Human - Gain - Safety ",
+    images: ["Being/Human", "Gain", "Safety"]
+},
+{
+    sentence: "Being/Human - Knowledge - Legacy ",
+    images: ["Being/Human", "Knowledge", "Legacy"]
+},
+{
+    sentence: "Improve - Advance - Now/Present ",
+    images: ["Improve", "Advance", "Now/Present"]
+},
+{
+    sentence: "Improve - Being/Human - Collective/Shapers ",
+    images: ["Improve", "Being/Human", "Collective/Shapers"]
+},
+{
+    sentence: "Inside/Not - XM - Truth ",
+    images: ["Inside/Not", "XM", "Truth"]
+},
+{
+    sentence: "Interrupt - Enlightened/Enlightenment - Technology ",
+    images: ["Interrupt", "Enlightened/Enlightenment", "Technology"]
+},
+{
+    sentence: "Journey - Inside/Not - Soul ",
+    images: ["Journey", "Inside/Not", "Soul"]
+},
+{
+    sentence: "Journey - Link - Portal ",
+    images: ["Journey", "Link", "Portal"]
+},
+{
+    sentence: "Key - Potential - Link ",
+    images: ["Key", "Potential", "Link"]
+},
+{
+    sentence: "Lead - Enlightened/Enlightenment - Civilization ",
+    images: ["Lead", "Enlightened/Enlightenment", "Civilization"]
+},
+{
+    sentence: "Liberate - Being/Human - Future ",
+    images: ["Liberate", "EquBeing/Human", "Future"]
+},
+{
+    sentence: "Lie - Equal - Future ",
+    images: ["Lie", "Equal", "Future"]
+},
+{
+    sentence: "N'zeer - Technology - Balance/Perfection ",
+    images: ["N'zeer", "Technology", "Balance/Perfection"]
+},
+{
+    sentence: "Peace - Simple - Journey ",
+    images: ["Peace", "Simple", "Journey"]
+},
+{
+    sentence: "Peace - Worth - More ",
+    images: ["Peace", "Worth", "More"]
+},
+{
+    sentence: "Balance/Perfection - Path - Harmony/Peace  ",
+    images: ["Balance/Perfection", "Path", "Harmony"]
+},
+{
+    sentence: "Pursue - Pure - Body ",
+    images: ["Pursue", "Pure", "Body"]
+},
+{
+    sentence: "Question - Hide - Truth ",
+    images: ["Question", "Hide", "Truth"]
+},
+{
+    sentence: "Question - Potential - Mystery ",
+    images: ["Question", "Potential", "Mystery"]
+},
+{
+    sentence: "React - Impure - Civilization ",
+    images: ["React", "Impure", "Civilization"]
+},
+{
+    sentence: "Recharge/Repair - Portal - Shield ",
+    images: ["Recharge/Repair", "Portal", "Shield"]
+},
+{
+    sentence: "Retreat - Search - Safety ",
+    images: ["Retreat", "Search", "Safety"]
+},
+{
+    sentence: "Share - Enlightened/Enlightenment - Knowledge ",
+    images: ["Share", "Enlightened/Enlightenment", "Knowledge"]
+},
+{
+    sentence: "Share - Resistance/Struggle - Message ",
+    images: ["Share", "Resistance/Struggle", "Message"]
+},
+{
+    sentence: "Star - Courage - Difficult ",
+    images: ["Star", "Courage", "Difficult"]
+},
+{
+    sentence: "Technology - Capture - Victory ",
+    images: ["Technology", "Capture", "Victory"]
+},
+{
+    sentence: "Together - End - Mystery ",
+    images: ["Together", "End", "Mystery"]
+},
+{
+    sentence: "Attack/War - Destroy - Future ",
+    images: ["Attack/War", "Destroy", "Future"]
+},
+{
+    sentence: "XM - Grow - Creativity/Idea/Thought ",
+    images: ["XM", "Grow", "Creativity/Idea/Thought"]
+},
+{
+    sentence: "XM - Nourish - Civilization ",
+    images: ["XM", "Nourish", "Civilization"]
+},
+{
+    sentence: "You/Your - Hide - Chaos ",
+    images: ["You/Your", "Hide", "Chaos"]
+},
+
+//Level 7 Portals
+{
+    sentence: "Abandon - Fear - Defend - Future ",
+    images: ["Abandon", "Fear", "Defend", "Future"]
+},
+{ 
+    sentence: "Abandon - Fear - See - Future",
+    images: ["Abandon","Fear","See","Future"]
+},
+{ 
+    sentence: "Adapt - Creativity/Idea/Thought - Discover - Evolution/Progress/Success ",
+    images: ["Adapt","Creativity/Idea/Thought","Discover","Evolution/Progress/Success"]
+},
+{ 
+    sentence: "All - Chaos - Insinde/Not - Body ",
+    images: ["All","Chaos","Inside/Not","Body"]
+},
+{ 
+    sentence: "Attack/War - Weak - Collective/Shapers - Lie ",
+    images: ["Attack/War","Weak","Collective/Shapers","Lie"]
+},
+{ 
+    sentence: "Before - Mystery - After - Knowledge",
+    images: ["Before","Mystery","After","Knowledge"]
+},
+{ 
+    sentence: "Begin - Being/Human - Legacy - Now/Present ",
+    images: ["Begin","Being/Human","Legacy","Now/Present"]
+},
+{ 
+    sentence: "Begin - Journey - Breathe/Live - XM ",
+    images: ["Begin","Journey","Breathe/Live","XM"]
+},
+{ 
+    sentence: "Breathe/Live - Nature - Balance/Perfection - Peace/Harmony ",
+    images: ["Breathe/Live","Nature","Balance/Perfection","Peace/Harmony"]
+},
+{ 
+    sentence: "Capture - Fear - Discover - Courage",
+    images: ["Capture","Fear","Discover","Courage"]
+},
+{ 
+    sentence: "Change - Future - Capture - Destiny",
+    images: ["Change","Future","Capture","Destiny"]  
+},
+{ 
+    sentence: "Change - Being/Human - Potential - Use",
+    images: ["Change","Being/Human","Portal","Use"]
+},
+{ 
+    sentence: "Change - Perspective - Begin - New",
+    images: ["Change","Perspective","Begin","New"]
+},
+{ 
+    sentence: "Chaos - Barrier - Collective/Shapers - Portal",
+    images: ["Chaos","Barrier","Collective/Shapers","Portal"]
+},
+{ 
+    sentence: "Clear - Mind - Accept/Open - Mind",
+    images: ["Clear","Mind","Accept/Open","Mind"]
+},
+{ 
+    sentence: "Clear All - Open All - Discover - Truth",
+    images: ["Clear All","Open All","Discover","Truth"]
+},
+{ 
+    sentence: "Contemplate - Chaos - Before - Link",
+    images: ["Contemplate","Chaos","Before","Link"]
+},
+{ 
+    sentence: "Complex - Collective/Shapers - Civilization - Strong",
+    images: ["Complex","Collective/Shapers","Civilization","Strong"]
+},
+{ 
+    sentence: "Contemplate - Individual/Self - Path - Truth",
+    images: ["Contemplate","Individual/Self","Path","Truth"]
+},
+{ 
+    sentence: "Courage - Attack/War - Collective/Shapers - Future",
+    images: ["Courage","Attack/War","Collective/Shapers","Future"]
+},
+{ 
+    sentence: "Create - Distance - Impure - Path",
+    images: ["Create","Distance","Impure","Path"]
+},
+{ 
+    sentence: "Create - Future - Not - War",
+    images: ["Create","Future","Not","War"]
+},
+{ 
+    sentence: "Create - New - Portal - Potential",
+    images: ["Create","New","Portal","Potential"]
+},
+{ 
+    sentence: "Defend - Field - Gain - Victory",
+    images: ["Defend","Field","Gain","Victory"]
+},
+{ 
+    sentence: "Defend - Being/Human - N'zeer - Lie",
+    images: ["Defend","Being/Human","N'zeer","Lie"]
+},
+{ 
+    sentence: "Defend - Message - Answer - Creativity/Idea/Thought",
+    images: ["Defend","Message","Answer","Creativity/Idea/Thought"]
+},
+{ 
+    sentence: "Destroy - Destiny - Being/Human - Lie",
+    images: ["Destroy","Destiny","Being/Human","Lie"]
+},
+{ 
+    sentence: "Destroy - Field - Capture - Key",
+    images: ["Destroy","Field","Capture","Key"]
+},
+{ 
+    sentence: "Deteriorate - Being/Human - Weak - Rebel",
+    images: ["Deteriorate","Being/Human","Weak","Rebel"]
+},
+{ 
+    sentence: "Difficult - Knowledge - Advance - Mind",
+    images: ["Difficult","Knowledge","Advance","Mind"]
+},
+{ 
+    sentence: "Enlightened/Enlightenment - Capture - Victory - Together",
+    images: ["Enlightened/Enlightenment","Capture","Victory","Together"]
+},
+{ 
+    sentence: "Escape - Before - Pure - Death/Die",
+    images: ["Escape","Before","Pure","Death/Die"]
+},
+{ 
+    sentence: "Escape - Simple - Being/Human - Future",
+    images: ["Escape","Simple","Being/Human","Future"]
+},
+{ 
+    sentence: "Fear - Imperfect - N'zeer - Technology",
+    images: ["Fear","Imperfect","N'zeer","Technology"]
+},
+{ 
+    sentence: "Follow - Collective/Shapers - Portal - Message",
+    images: ["Follow","Collective/Shapers","Portal","Message"]
+},
+{ 
+    sentence: "Forget - Conflict - Accept/Open - Attack/War ",
+    images: ["Forget","Conflict","Accept/Open","Attack/War"]
+},
+{ 
+    sentence: "Peace/Harmony - Path - Nourish - Now/Present",
+    images: ["Peace/Harmony","Path","Nourish","Now/Present"]
+},
+{ 
+    sentence: "Help - Enlightened/Enlightenment - Strong - Victory ",
+    images: ["Help","Enlightened/Enlightenment","Strong","Victory"]
+},
+{ 
+    sentence: "Help - Gain - Create - Pursue",
+    images: ["Help","Gain","Create","Pursue"]
+},
+{ 
+    sentence: "Help - Resistance/Struggle - Strong  - Victory",
+    images: ["Help","Resistance/Struggle","Strong","Victory"]
+},
+{ 
+    sentence: "Help - Us/We - Save  - Us/We",
+    images: ["Help","Us/We","Save","Us/We"]
+},
+{ 
+    sentence: "Hide - Chaos - Inside/Not - Body",
+    images: ["Hide","Chaos","Inside/Not","Body"]
+},
+{ 
+    sentence: "Hide - Impure - Being/Human - Creativity/Idea/Thought",
+    images: ["Hide","Impure","Being/Human","Creativity/Idea/Thought"]
+},
+{ 
+    sentence: "Being/Human - Have - Impure - Civilization",
+    images: ["Being/Human","Have","Impure","Civilization"]
+},
+{ 
+    sentence: "Being/Human - Past - Now/Present - Future",
+    images: ["Being/Human","Past","Now/Present","Future"]
+},
+{ 
+    sentence: "Being/Human - Soul - Strong - Pure",
+    images: ["Being/Human","Soul","Strong","Pure"]
+},
+{ 
+    sentence: "Ignore - Being/Human - Chaos - Lie",
+    images: ["Ignore","Being/Human","Chaos","Lie"]
+},
+{ 
+    sentence: "Improve - Body - Mind - Soul",
+    images: ["Improve","Body","Mind","Soul"]
+},
+{ 
+    sentence: "Improve - Body - Pursue - Journey",
+    images: ["Improve","Body","Pursue","Journey"]
+},
+{ 
+    sentence: "Inside/Not - Mind - Journey - Balance/Perfection",
+    images: ["Inside/Not","Mind","Journey","Balance/Perfection"]
+},
+{ 
+    sentence: "Interrupt - Message - Gain - Advance",
+    images: ["Interrupt","Message","Gain","Advance"]
+},
+{ 
+    sentence: "Journey - Inside/Not - Improve - Soul",
+    images: ["Journey","Inside/Not","Improve","Soul"]
+},
+{ 
+    sentence: "Knowledge - Help - Gain - Victory",
+    images: ["Knowledge","Help","Gain","Victory"]
+},
+{ 
+    sentence: "Lead - Pursue - React - Defend",
+    images: ["Lead","Pursue","React","Defend"]
+},
+{ 
+    sentence: "Less - Shield - More - Harm",
+    images: ["Less","Shield","More","Harm"]
+},
+{ 
+    sentence: "Less - Soul - More - Mind",
+    images: ["Less","Soul","More","Mind"]
+},
+{ 
+    sentence: "Less - Truth - More - Chaos",
+    images: ["Less","Truth","More","Chaos"]
+},
+{ 
+    sentence: "Liberate - XM - Portal - Together",
+    images: ["Liberate","XM","Portal","Together"]
+},
+{ 
+    sentence: "Link - Key - Field - Success",
+    images: ["Link","Key","Field","Success"]
+},
+{ 
+    sentence: " Live/Again/Reincarnate - Death/Die - Again - Evolution/Progress/Success",
+    images: ["Live/Again/Reincarnate","Death/Die","Again","Evolution/Progress/Success"]
+},
+{ 
+    sentence: "Lose - Danger - Gain - Safety",
+    images: ["Lose","Danger","Gain","Safety"]
+},
+{ 
+    sentence: "Nourish - XM - Create - Creativity/Idea/Thought",
+    images: ["Nourish","xm","Create","Creativity/Idea/Thought"]
+},
+{ 
+    sentence: "N'ZEER - Legacy - Create - Future",
+    images: ["N'zeer","Legacy","Create","Future"]
+},
+{ 
+    sentence: "N'ZEER - Collective/Shapers - Resistance/Struggle - Knowledge",
+    images: ["N'zeer","Collective/Shapers","Resistance/Struggle","Knowledge"]
+},
+{ 
+    sentence: "N'ZEER - Technology - Mind - Evolution/Progress/Success",
+    images: ["N'Zeer","Technology","Mind","Evolution/Progress/Success"]
+},
+{ 
+    sentence: "N'ZEER - Technology - Balance/Perfection - Truth",
+    images: ["N'ZEER","Technology","Balance/Perfection","Truth"]
+},
+{ 
+    sentence: "Open All - Link - Create - Star",
+    images: ["Open All","Link","Create","Star"]
+},
+{ 
+    sentence: "Past - Again - Now/Present - Again",
+    images: ["Past","Again","Now/Present","Again"]
+},
+{ 
+    sentence: "Path - Restraint - Strong - Safety",
+    images: ["Path","Restraint","Strong","Safety"]
+},
+{ 
+    sentence: "Portal - Change - Civilization - Death/Die",
+    images: ["Portal","Change","Civilization","Death/Die"]
+},
+{ 
+    sentence: "Portal - Death/Die - Civilization - End",
+    images: ["Portal","Death/Die","Civilization","End"]
+},
+{ 
+    sentence: "Portal - Have - Truth - Data",
+    images: ["Portal","Have","Truth","Data"]
+},
+{ 
+    sentence: "Question - Truth - Gain - Future",
+    images: ["Question","Truth","Gain","Future"]
+},
+{ 
+    sentence: "Restraint - Fear - Avoid - Danger",
+    images: ["Restraint","Fear","Avoid","Danger"]
+},
+{ 
+    sentence: "Restraint - Path - Gain - Peace/Harmony",
+    images: ["Restraint","Path","Gain","Peace/Harmony"]
+},
+{ 
+    sentence: "Search - Data - Discover - Path",
+    images: ["Search","Data","Discover","Path"]
+},
+{ 
+    sentence: "Search - Truth - Save - Civilization",
+    images: ["Search","Truth","Save","Civilization"]
+},
+{ 
+    sentence: "Search - XM - Distance/Outside - Destination",
+    images: ["Search","XM","Distance/Outside","Destination"]
+},
+{ 
+    sentence: "See - Truth - See - Future",
+    images: ["See","Truth","See","Future"]
+},
+{ 
+    sentence: "Separate - Weak - Ignore - Truth",
+    images: ["Separate","Weak","Ignore","Truth"]
+},
+{ 
+    sentence: "Collective/Shapers - Chaos - Pure - Harm",
+    images: ["Collective/Shapers","Chaos","Pure","Harm"]
+},
+{ 
+    sentence: "Collective/Shapers - Message - End - Civilization",
+    images: ["Collective/Shapers","Message","End","Civilization"]
+},
+{ 
+    sentence: "Collective/Shapers - Mind - Complex - Peace/Harmony ",
+    images: ["Collective/Shapers","Mind","Complex","Peace/Harmony"]
+},
+{ 
+    sentence: "Collective/Shapers - Past - Now/Present - Future",
+    images: ["Collective/.Shapers","Past","Now/Present","Future"]
+},
+{ 
+    sentence: "Collective/Shapers - See - Potential - Evolution/Progress/Success",
+    images: ["Collective/Shapers","See","Potential","Evolution/Progress/Success"]
+},
+{ 
+    sentence: "Share - Key - Save - All",
+    images: ["Share","Key","Save","All"]
+},
+{ 
+    sentence: "Shield - Defend - Being/Human - Civilization",
+    images: ["Shield","Defend","Being/Human","Civilization"]
+},
+{ 
+    sentence: "Simple - Civilization - Impure - Weak",
+    images: ["Simple","Civilization","Impure","Weak"]
+},
+{ 
+    sentence: "Simple - Message - Complex - Creativity/Idea/Thought",
+    images: ["Simple","Message","Complex","Creativity/Idea/Thought"]
+},
+{ 
+    sentence: "Simple - Truth - Breathe - Nature",
+    images: ["Simple","Truth","Breathe","Nature"]
+},
+{ 
+    sentence: "Soul - Rebel - Being/Human - Death/Die",
+    images: ["Soul","Rebel","Being/Human","Death/Die"]
+},
+{ 
+    sentence: "Stay - Together - Defend - Truth",
+    images: ["Stay","Together","Defend","Truth"]
+},
+{ 
+    sentence: "Strong - Creativity/Idea/Thought - Pursue - Truth",
+    images: ["Strong","Creativity/Idea/Thought","Pursue","Truth"]
+},
+{ 
+    sentence: "Strong - Portal - Strong - Field",
+    images: ["Strong","Portal","Strong","Field"]
+},
+{ 
+    sentence: "Strong - Together - Avoid - Attack/War",
+    images: ["Strong","Together","Avoid","Attack/War"]
+},
+{ 
+    sentence: "Resistance/Struggle - Defend - Collective/Shapers - Danger",
+    images: ["Resistance/Struggle","Defend","Collective/Shapers","Danger"]
+},
+{ 
+    sentence: "Resistance/Struggle - Improve - Being/Human - Soul",
+    images: ["Resistance/Struggle","Improve","Being/Human","Soul"]
+},
+{ 
+    sentence: "Together - Discover - Peace/Harmony - Equal",
+    images: ["Together","Discover","Peace/Hamrony","Equal"]
+},
+{ 
+    sentence: "Truth - Creativity/Idea/Thought - Discover - XM",
+    images: ["Truth","Creativity/Idea/Thought","Discover","XM"]
+},
+{ 
+    sentence: "Attack/War - Not - Worth - Consequence",
+    images: ["Attack/War","Not","Worth","Consequence"]
+},
+{ 
+    sentence: "Weak - Portal - Weak - Field",
+    images: ["Weak","Portal","Weak","Field"]
+},
+{ 
+    sentence: "XM - Death/Die - Chaos - Live",
+    images: ["XM","Death/Die","Chaos","Live"]
+},
+{ 
+    sentence: "XM - Nourish - Strong - Creativity/Idea/Thought",
+    images: ["XM","Nourish","Strong","Creativity/Idea/Thought"]
+},
+{ 
+    sentence: "XM - Share - You/Your - Creativity/Idea/Thought",
+    images: ["XM","Share","You/Your","Creativity/Idea/Thought"]
+},
+//Level 8 Portals
+{ 
+    sentence: "- - - -",
+    images: ["","","","",""]
+},
+];
+
+
+// ------------------------------------Function to filter images based on search term------------------------------------------------------------------------
+document.getElementById('searchInput').addEventListener('input', filterImages);
+
+// Function to filter images
+function filterImages() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const allImageWrappers = document.querySelectorAll('.image-wrapper');
+
+    allImageWrappers.forEach(wrapper => {
+        const imageTitle = wrapper.querySelector('.image-title').textContent.toLowerCase();
+        if (imageTitle.includes(searchTerm)) {
+            wrapper.style.display = ''; // Show image if title matches search
+        } else {
+            wrapper.style.display = 'none'; // Hide image if title does not match search
+        }
+    });
+}
+
+let selectedFilter = null;
+
+//------------------------------------Handle sidebar filter clicks------------------------------------------------------------------------
+document.querySelectorAll('.filter-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        selectedFilter = parseInt(button.getAttribute('data-length'), 10); // Get the selected filter value
+        const clickedImage = document.querySelector('.image-wrapper.selected'); // Get selected image (if any)
+
+        if (clickedImage) {
+            const clickedImageName = clickedImage.querySelector('.image-title').textContent;
+            const matchingSequences = getSequencesForImage(clickedImageName);
+            const filteredSequences = filterSequencesByLength(matchingSequences, selectedFilter);
+            displayMatchingSequences(filteredSequences);
+        } else {
+            const filteredSequences = filterSequencesByLength(sequences, selectedFilter);
+            displayMatchingSequences(filteredSequences);
+        }
+    });
+});
+
+//------------------------------------Filter sequences by length------------------------------------------------------------------------
+function filterSequencesByLength(sequences, length) {
+    return sequences.filter(seq => seq.images.length === length);
+}
+
+// Handle image click to filter sequences
+document.querySelectorAll('.image-wrapper').forEach(wrapper => {
+    wrapper.addEventListener('click', () => {
+        document.querySelectorAll('.image-wrapper').forEach(w => w.classList.remove('selected')); // Deselect all
+        wrapper.classList.add('selected'); // Mark current as selected
+
+        const clickedImageName = wrapper.querySelector('.image-title').textContent;
+        let matchingSequences = getSequencesForImage(clickedImageName);
+
+        if (selectedFilter) {
+            matchingSequences = filterSequencesByLength(matchingSequences, selectedFilter);
+        }
+
+        displayMatchingSequences(matchingSequences);
+    });
+});
+
+function displayMatchingSequences(matchingSequences) {
+    const sequenceContainer = document.getElementById('sequences');
+    sequenceContainer.innerHTML = ''; // Clear previous sequences
+
+    if (matchingSequences.length > 0) {
+        matchingSequences.forEach(seq => {
+            // Create a container for the sequence and its images
+            const sequenceItem = document.createElement('div');
+            sequenceItem.classList.add('sequence-item');
+
+            // Add the sequence sentence
+            const sequenceText = document.createElement('div');
+            sequenceText.textContent = seq.sentence;
+            sequenceText.classList.add('sequence-text');
+
+            // Create a container for the images
+            const imagesContainer = document.createElement('div');
+            imagesContainer.classList.add('images-container');
+
+            // Add each image associated with the sequence
+            seq.images.forEach(imageTitle => {
+                const matchingWrapper = Array.from(document.querySelectorAll('.image-wrapper'))
+                    .find(wrapper => wrapper.querySelector('.image-title').textContent.trim() === imageTitle.trim());
+
+                if (matchingWrapper) {
+                    const imageClone = matchingWrapper.cloneNode(true); // Clone the original image
+                    imagesContainer.appendChild(imageClone); // Add the image to the images container
+                }
+            });
+
+            // Append the sequence sentence and images to the sequence item
+            sequenceItem.appendChild(sequenceText);
+            sequenceItem.appendChild(imagesContainer);
+
+            // Add the sequence item to the container
+            sequenceContainer.appendChild(sequenceItem);
+        });
+    } else {
+        const noResults = document.createElement('div');
+        noResults.textContent = "No sequences found.";
+        sequenceContainer.appendChild(noResults);
+    }
+}
+//------------------------------------Function to display matching sequences with a "Show Gif" button------------------------------------------------------------------------
+function displayMatchingSequences(matchingSequences) {
+    const sequenceContainer = document.getElementById('sequences');
+    sequenceContainer.innerHTML = ''; // Clear previous sequences
+
+    if (matchingSequences.length > 0) {
+        matchingSequences.forEach(seq => {
+            // Create a container for the sequence and its images
+            const sequenceItem = document.createElement('div');
+            sequenceItem.classList.add('sequence-item');
+
+            // Add the sequence sentence
+            const sequenceText = document.createElement('div');
+            sequenceText.textContent = seq.sentence;
+            sequenceText.classList.add('sequence-text');
+
+            // Create a container for the images
+            const imagesContainer = document.createElement('div');
+            imagesContainer.classList.add('images-container');
+
+            // Add each image associated with the sequence
+            seq.images.forEach(imageTitle => {
+                const matchingWrapper = Array.from(document.querySelectorAll('.image-wrapper'))
+                    .find(wrapper => wrapper.querySelector('.image-title').textContent.trim() === imageTitle.trim());
+
+                if (matchingWrapper) {
+                    const imageClone = matchingWrapper.cloneNode(true); // Clone the original image
+                    imagesContainer.appendChild(imageClone); // Add the image to the images container
+                }
+            });
+
+            //------------------------------------------------------------------------Create the "Show Gif" button
+            const gifButton = document.createElement('button');
+            gifButton.textContent = 'Show Gif';
+            gifButton.classList.add('show-gif-button');
+            
+            // Event listener to show the GIF when clicked
+            gifButton.addEventListener('click', () => {
+                const gifContainer = document.createElement('div');
+                gifContainer.classList.add('gif-container');
+                const gifUrl = "https://gm9.github.io/ingress-glyph-tools/example-glyph-sequences.html"; // GIF URL or iframe
+                const iframe = document.createElement('iframe');
+                iframe.src = gifUrl;
+                iframe.width = "100%";
+                iframe.height = "400px";
+                gifContainer.appendChild(iframe);
+
+                // Append GIF container below the sequence
+                sequenceItem.appendChild(gifContainer);
+            });
+
+            // Append the sequence sentence, images, and button to the sequence item
+            sequenceItem.appendChild(sequenceText);
+            sequenceItem.appendChild(imagesContainer);
+            sequenceItem.appendChild(gifButton);
+
+            // Add the sequence item to the container
+            sequenceContainer.appendChild(sequenceItem);
+        });
+    } else {
+        const noResults = document.createElement('div');
+        noResults.textContent = "No sequences found.";
+        sequenceContainer.appendChild(noResults);
+    }
+}
+//------------------------------------------------------------------------ BACK TO TOP OF PAGE
+document.addEventListener('DOMContentLoaded', () => {
+    // Select all images within the page
+    const images = document.querySelectorAll('img'); // Adjust selector to target the specific images you want
+
+    images.forEach(image => {
+        image.addEventListener('click', () => {
+            // Scroll to the top of the page
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // Smooth scrolling effect
+            });
+        });
+    });
+});
+
+//---------------------------------------------------------SIDE BAR DISSAPEARANCE------------------------------------------------------------------------ 
+document.addEventListener('DOMContentLoaded', () => {
+    const filterContainer = document.querySelector('.sidebar');
+    let lastScrollTop = 0;
+
+    window.addEventListener('scroll', () => {
+        const currentScrollTop = window.scrollY;
+
+        if (currentScrollTop > lastScrollTop) {
     
+            // User is scrolling down
+            filterContainer.style.opacity = '0';
+            filterContainer.style.pointerEvents = 'none'; // Disable interaction when hidden
+        } else {
+            // User is scrolling up
+            filterContainer.style.opacity = '1';
+            filterContainer.style.pointerEvents = 'auto'; // Enable interaction when visible
+        }
 
-    <div class="image-container">
-        <div class="image-wrapper" data-index="1">
-            <span class="image-title">Abandon</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/ac/Abandon_Glyph.png/revision/latest?cb=20210307182349" alt="'Abandon' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="2">
-            <span class="image-title">Accept/Open</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/3/30/Accept-Open_Glyph.png/revision/latest?cb=20210307182406" alt="'Accept - Open' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="3">
-            <span class="image-title">Adapt</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/26/Adapt_Glyph.png/revision/latest?cb=20210307182425" alt="'Adapt' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="4">
-            <span class="image-title">Advance</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/e2/Advance_Glyph.png/revision/latest?cb=20210307182450" alt="'Advance' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="5">
-            <span class="image-title">After</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/ae/After_Glyph.png/revision/latest?cb=20210307182538" alt="'After' Glyph">
-            <span class="number-badge"></span>
-        </div>
+        lastScrollTop = currentScrollTop;
+    });
+});
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        <div class="image-wrapper" data-index="6">
-            <span class="image-title">Again/Repeat</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/aa/Again-Repeat_Glyph.png/revision/latest?cb=20210307182557" alt="'Again - Repeat' Glyph">
-            <span class="number-badge"></span>
-        </div>
 
-        <div class="image-wrapper" data-index="7">
-            <span class="image-title">All</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/1/19/All_Glyph.png/revision/latest?cb=20210307182619" alt="'Again - Repeat' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="8">
-            <span class="image-title">Answer</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/3/33/Answer_Glyph.png/revision/latest?cb=20210307182645" alt="Again - 'Answer' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="9">
-            <span class="image-title">Attack/War</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/0/0c/Attack-War_Glyph.png/revision/latest?cb=20210307182657" alt="Again - 'Attack - War' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="10">
-            <span class="image-title">Avoid</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/5c/Avoid_Glyph.png/revision/latest?cb=20210307182710" alt="'Avoid' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="11">
-            <span class="image-title">Balance/Perfection</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/94/Balance-Perfection_Glyph.png/revision/latest?cb=20210307182723" alt="'Balance - Perfection' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="12">
-            <span class="image-title">Barrier</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/4a/Barrier_Glyph.png/revision/latest?cb=20210307182736" alt="'Barrier' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="13">
-            <span class="image-title">Before</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/23/Before_Glyph.png/revision/latest?cb=20210307182749" alt="'Before' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="14">
-            <span class="image-title">Begin</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/6/69/Begin_Glyph.png/revision/latest?cb=20210307182827" alt="'Begin' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="15">
-            <span class="image-title">Being/Human</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/51/Being-Human_Glyph.png/revision/latest?cb=20210307182846" alt="'Being - Human' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="16">
-            <span class="image-title">Body</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/b/bb/Body_Glyph.png/revision/latest?cb=20210307182900" alt="'Body' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="17">
-            <span class="image-title">Breathe/Live</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/a8/Breathe-Live_Glyph.png/revision/latest?cb=20210307182912" alt="'Breathe' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="18">
-            <span class="image-title">Capture</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/d4/Capture_Glyph.png/revision/latest?cb=20210307182925" alt="'Capture' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-        <div class="image-wrapper" data-index="19">
-            <span class="image-title">Change</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/98/Change_Glyph.png/revision/latest?cb=20210307183015" alt="'Change' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="20">
-            <span class="image-title">Chaos</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/97/Chaos_Glyph.png/revision/latest?cb=20210307183028" alt="'Chaos' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="21">
-            <span class="image-title">Cilvilization</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/70/Civilization_Glyph.png/revision/latest?cb=20210307183040" alt="'Cilvilization' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-        <div class="image-wrapper" data-index="22">
-            <span class="image-title">Cilvilization</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/70/Civilization_Glyph.png/revision/latest?cb=20210307183040" alt="'Cilvilization' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="23">
-            <span class="image-title">Clear</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/0/05/Clear_Glyph.png/revision/latest?cb=20210307183123" alt="'Clear' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="24">
-            <span class="image-title">Clear All</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/1/1c/Clear_All_Glyph.png/revision/latest?cb=20210307183107" alt="'Clear All' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-        <div class="image-wrapper" data-index="25">
-            <span class="image-title">Collective/Shapers</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/c/c9/Collective-Shapers_Glyph.png/revision/latest?cb=20210307183145" alt="'Collective - Shapers' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="26">
-            <span class="image-title">Complex</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/d7/Complex_Glyph.png/revision/latest?cb=20210307183200" alt="'Complex' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="27">
-            <span class="image-title">Conflict</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/e1/Conflict_Glyph.png/revision/latest?cb=20210307183214" alt="'Conflict' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="28">
-            <span class="image-title">Consequence</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/eb/Consequence_Glyph.png/revision/latest?cb=20210307183227" alt="'Consequence' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="29">
-            <span class="image-title">Contemplate</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/3/39/Contemplate_Glyph.png/revision/latest?cb=20210307183241" alt="'Contemplate' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="30">
-            <span class="image-title">Courage</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/8/8a/Courage_Glyph.png/revision/latest?cb=20210307183313" alt="'Courage' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="31">
-            <span class="image-title">Create</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/6/68/Create_Glyph.png/revision/latest?cb=20210307183328" alt="'Create' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="32">
-            <span class="image-title">Creativity/Idea/Thought</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/77/Creativity-Idea-Thought_Glyph.png/revision/latest?cb=20210307183345" alt="'Creativity-Idea-Thought' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="33">
-            <span class="image-title">Danger</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/4c/Danger_Glyph.png/revision/latest?cb=20210307183423" alt="'Danger' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-        <div class="image-wrapper" data-index="34">
-            <span class="image-title">Data</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/42/Data_Glyph.png/revision/latest?cb=20210307183436" alt="'Data' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-        <div class="image-wrapper" data-index="35">
-            <span class="image-title">Defend</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/b/ba/Defend_Glyph.png/revision/latest?cb=20210307183506" alt="'Defend' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-        <div class="image-wrapper" data-index="36">
-            <span class="image-title">Destination</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/a9/Destination_Glyph.png/revision/latest?cb=20210307183520" alt="'Destination' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-        <div class="image-wrapper" data-index="37">
-            <span class="image-title">Destiny</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/93/Destiny_Glyph.png/revision/latest?cb=20210307183530" alt="'Destiny' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="38">
-            <span class="image-title">Destroy</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/46/Destroy_Glyph.png/revision/latest?cb=20210307183552" alt="'Destroy' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="39">
-            <span class="image-title">Deteriorate</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/9a/Deteriorate_Glyph.png/revision/latest?cb=20210307183644" alt="'Deteriorate' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="40">
-            <span class="image-title">Death/Die</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/92/Death-Die_Glyph.png/revision/latest?cb=20210307183451" alt="'Death/Die' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="41">
-            <span class="image-title">Difficult</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/de/Difficult_Glyph.png/revision/latest?cb=20210307183657" alt="'Difficult' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="42">
-            <span class="image-title">Discover</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/6/6d/Discover_Glyph.png/revision/latest?cb=20210307183710" alt="'Discover' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="43">
-            <span class="image-title">Distance/Outside</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/98/Distance-Outside_Glyph.png/revision/latest?cb=20210307183722" alt="'Distance/Outside' Glyph">
-            <span class="number-badge"></span>
-        </div>
-
-        <div class="image-wrapper" data-index="44">
-            <span class="image-title">Easy</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/24/Easy_Glyph.png/revision/latest?cb=20210307183747" alt="'Easy' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-
-        <div class="image-wrapper" data-index="45">
-            <span class="image-title">End</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/d3/End_Glyph.png/revision/latest?cb=20210307183800" alt="'End' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-
-        <div class="image-wrapper" data-index="464">
-            <span class="image-title">Enlightened/Enlightenment</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/0/01/Enlightened-Enlightenment_Glyph.png/revision/latest?cb=20210307183813" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-
-        <div class="image-wrapper" data-index="47">
-            <span class="image-title">Equal</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/23/Equal_Glyph.png/revision/latest?cb=20210307183844" alt="'Equal' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-
-        <div class="image-wrapper" data-index="48">
-            <span class="image-title">Escape</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/ec/Escape_Glyph.png/revision/latest?cb=20210307183901" alt="'Escape' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        
-        <div class="image-wrapper" data-index="49">
-            <span class="image-title">Evolution/Progress/Success</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/db/Evolution-Progress-Success_Glyph.png/revision/latest?cb=20210307183913" alt="'Evolution/Progress/Success' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="50">
-            <span class="image-title">Failure</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/db/Failure_Glyph.png/revision/latest?cb=20210307183924" alt="'Failure' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="51">
-            <span class="image-title">Fear</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/a1/Fear_Glyph.png/revision/latest?cb=20210307183939" alt="'Fear' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="52">
-            <span class="image-title">Field</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/44/Field_Glyph.png/revision/latest?cb=20210307183953" alt="'Field' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="53">
-            <span class="image-title">Follow</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/1/13/Follow_Glyph.png/revision/latest?cb=20210307184006" alt="'Follow' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="54">
-            <span class="image-title">Forget</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/1/19/Forget_Glyph.png/revision/latest?cb=20210307184017" alt="'Forget' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="55">
-            <span class="image-title">Future</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/44/Future_Glyph.png/revision/latest?cb=20210307184031" alt="'Future' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="56">
-            <span class="image-title">Gain</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/45/Gain_Glyph.png/revision/latest?cb=20210307184047" alt="'Gain' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="57">
-            <span class="image-title">Grow</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/4c/Grow_Glyph.png/revision/latest?cb=20210307184103" alt="'Grow' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="58">
-            <span class="image-title">Harm</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/c/c4/Harm_Glyph.png/revision/latest?cb=20210307184118" alt="'Harm' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="59">
-            <span class="image-title">Harmony/Peace</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/28/Harmony-Peace_Glyph.png/revision/latest?cb=20210307184128" alt="'Harmony/Peace' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="60">
-            <span class="image-title">Have</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/9d/Have_Glyph.png/revision/latest?cb=20210307184139" alt="'Have' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="61">
-            <span class="image-title">Help</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/99/Help_Glyph.png/revision/latest?cb=20210307184151" alt="'Help' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="62">
-            <span class="image-title">Hide</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/21/Hide_Glyph.png/revision/latest?cb=20210307184200" alt="'Hide' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="63">
-            <span class="image-title">I/Me</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/5a/I-Me_Glyph.png/revision/latest?cb=20210307184256" alt="'I/Me' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="64">
-            <span class="image-title">Ignore</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/1/16/Ignore_Glyph.png/revision/latest?cb=20210307184216" alt="'Ignore' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="65">
-            <span class="image-title">Imperfect<span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/3/36/Imperfect_Glyph.png/revision/latest?cb=20210307184324" alt="'Imperfect' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="66">
-            <span class="image-title">Improve</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/2e/Improve_Glyph.png/revision/latest?cb=20210307184337" alt="'Improve' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="67">
-            <span class="image-title">Impure</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/90/Impure_Glyph.png/revision/latest?cb=20210307184348" alt="'Impure' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="68">
-            <span class="image-title">Individual/Self</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/51/Individual-Self_Glyph.png/revision/latest?cb=20210307184413" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="69">
-            <span class="image-title">Inside/Not</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/5e/Inside-Not_Glyph.png/revision/latest?cb=20210307184441" alt="'Inside/Not' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="70">
-            <span class="image-title">Intelligence</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/f/f4/Intelligence_Glyph.png/revision/latest?cb=20210307184615" alt="'Intelligence' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="71">
-            <span class="image-title">Interrupt</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/d8/Interrupt_Glyph.png/revision/latest?cb=20210307184630" alt="'Interrupt' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="72">
-            <span class="image-title">Journey</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/a2/Journey_Glyph.png/revision/latest?cb=20210307184640" alt="'Journey' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="73">
-            <span class="image-title">Key</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/f/f3/Key_Glyph.png/revision/latest?cb=20210307184652" alt="'Key' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="74">
-            <span class="image-title">Knowledge</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/f/ff/Knowledge_Glyph.png/revision/latest?cb=20210307184704" alt="'KNowledge' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="75">
-            <span class="image-title">Lead</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/42/Lead_Glyph.png/revision/latest?cb=20210307184721" alt="'Lead' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="76">
-            <span class="image-title">Legacy</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/2a/Legacy_Glyph.png/revision/latest?cb=20210307184744" alt="'Legacy' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="77">
-            <span class="image-title">Less</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/8/86/Less_Glyph.png/revision/latest?cb=20210307184801" alt="'Less' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="78">
-            <span class="image-title">Liberate</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/b/b7/Liberate_Glyph.png/revision/latest?cb=20210307184825" alt="'Liberate' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="79">
-            <span class="image-title">Lie</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/3/36/Lie_Glyph.png/revision/latest?cb=20210307184836" alt="'Lie' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="80">
-            <span class="image-title">Link</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/e8/Link_Glyph.png/revision/latest?cb=20210307184846" alt="'Link' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="81">
-            <span class="image-title">Live/Again/Reincarnate</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/6/63/Live_Again-Reincarnate_Glyph.png/revision/latest?cb=20210307185002" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="82">
-            <span class="image-title">Lose</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/90/Lose_Glyph.png/revision/latest?cb=20210307185030" alt="'Lose' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="83">
-            <span class="image-title">Message</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/49/Message_Glyph.png/revision/latest?cb=20210307185049" alt="'Message' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="84">
-            <span class="image-title">Mind</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/f/f0/Mind_Glyph.png/revision/latest?cb=20210307185100" alt="'Mind' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="85">
-            <span class="image-title">More</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/7f/More_Glyph.png/revision/latest?cb=20210307185120" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="86">
-            <span class="image-title">Mystery</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/f/fd/Mystery_Glyph.png/revision/latest?cb=20210307185135" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="87">
-            <span class="image-title">Nature</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/44/Nature_Glyph.png/revision/latest?cb=20210307185148" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="88">
-            <span class="image-title">New</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/4a/New_Glyph.png/revision/latest?cb=20210307185330" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="89">
-            <span class="image-title">N'zeer</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/1/18/N%27Zeer_Glyph.png/revision/latest?cb=20210307185453" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="90">
-            <span class="image-title">Nemesis</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/6/6a/Nemesis_Glyph.png/revision/latest?cb=20210307185309" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="91">
-            <span class="image-title">Nourish</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/73/Nourish_Glyph.png/revision/latest?cb=20210307185340" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="92">
-            <span class="image-title">Now/Present</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/99/Now-Present_Glyph.png/revision/latest?cb=20210307185440" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="93">
-            <span class="image-title">Old</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/24/Old_Glyph.png/revision/latest?cb=20210307185509" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="94">
-            <span class="image-title">Open All</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/8/84/Open_All_Glyph.png/revision/latest?cb=20210307185519" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="95">
-            <span class="image-title">Osiris</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/2f/Osiris_Glyph.png/revision/latest?cb=20210307185529" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="96">
-            <span class="image-title">Past</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/40/Past_Glyph.png/revision/latest?cb=20210307185552" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="97">
-            <span class="image-title">Path</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/e6/Path_Glyph.png/revision/latest?cb=20210307185605" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="98">
-            <span class="image-title">Perspective</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/21/Perspective_Glyph.png/revision/latest?cb=20210307185616" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="99">
-            <span class="image-title">Portal</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/f/fc/Portal_Glyph.png/revision/latest?cb=20210307185634" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="100">
-            <span class="image-title">Potential</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/ab/Potential_Glyph.png/revision/latest?cb=20210307185657" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="101">
-            <span class="image-title">Presence</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/76/Presence_Glyph.png/revision/latest?cb=20210307185716" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="102">
-            <span class="image-title">Pure</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/ee/Pure_Glyph.png/revision/latest?cb=20210307185729" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="103">
-            <span class="image-title">Pursue</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/0/07/Pursue_Glyph.png/revision/latest?cb=20210307185740" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="104">
-            <span class="image-title">Question</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/8/8a/Question_Glyph.png/revision/latest?cb=20210307185751" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="105">
-            <span class="image-title">React</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/21/React_Glyph.png/revision/latest?cb=20210307185804" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="106">
-            <span class="image-title">Rebel</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/d1/Rebel_Glyph.png/revision/latest?cb=20210307185816" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="107">
-            <span class="image-title">Recharge/Repair</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/ec/Recharge-Repair_Glyph.png/revision/latest?cb=20210307185828" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="108">
-            <span class="image-title">Resistance/Struggle</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/54/Resistance-Struggle_Glyph.png/revision/latest?cb=20210307185839" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="109">
-            <span class="image-title">Restraint</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/5e/Restraint_Glyph.png/revision/latest?cb=20210307185853" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="110">
-            <span class="image-title">Retreat</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/41/Retreat_Glyph.png/revision/latest?cb=20210307185908" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="111">
-            <span class="image-title">Safety</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/77/Safety_Glyph.png/revision/latest?cb=20210307185925" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="112">
-            <span class="image-title">Save</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/3/30/Save_Glyph.png/revision/latest?cb=20210307185935" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="112">
-            <span class="image-title">Search</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/6/62/Search_Glyph.png/revision/latest?cb=20210307185945" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="113">
-            <span class="image-title">See</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/a4/See_Glyph.png/revision/latest?cb=20210307185957" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="114">
-            <span class="image-title">Separate</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/a/a3/Separate_Glyph.png/revision/latest?cb=20210307190023" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="115">
-            <span class="image-title">Share</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/79/Share_Glyph.png/revision/latest?cb=20210307190034" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="116">
-            <span class="image-title">Shield</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/8/82/Shield_Glyph.png/revision/latest?cb=20210307190101" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="117">
-            <span class="image-title">Simple</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/8/82/Simple_Glyph.png/revision/latest?cb=20210307190114" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="118">
-            <span class="image-title">Soul</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/ee/Soul_Glyph.png/revision/latest?cb=20210307190127" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="119">
-            <span class="image-title">Speed</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/c/c3/Speed_Glyph.png/revision/latest?cb=20241113024208" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="120">
-            <span class="image-title">Stability/Stay</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/55/Stability-Stay_Glyph.png/revision/latest?cb=20210307190140" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="121">
-            <span class="image-title">Star</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/c/c7/Star_Glyph.png/revision/latest?cb=20210307190151" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="122">
-            <span class="image-title">Strong</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/b/b9/Strong_Glyph.png/revision/latest?cb=20210307190206" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="123">
-            <span class="image-title">Technology</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/7c/Technology_Glyph.png/revision/latest?cb=20210307190227" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="124">
-            <span class="image-title">Them</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/78/Them_Glyph.png/revision/latest?cb=20210307181448" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="125">
-            <span class="image-title">Together</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/41/Together_Glyph.png/revision/latest?cb=20210307190242" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="126">
-            <span class="image-title">Truth</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/d/d6/Truth_Glyph.png/revision/latest?cb=20210307190252" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="127">
-            <span class="image-title">Unbounded</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/e/e7/Unbounded_Glyph.png/revision/latest?cb=20210307190307" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="128">
-            <span class="image-title">Us/We</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/b/b1/Us-We_Glyph.png/revision/latest?cb=20210307190329" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="129">
-            <span class="image-title">Use</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/0/04/Use_Glyph.png/revision/latest?cb=20210307190318" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="130">
-            <span class="image-title">Victory</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/9/9f/Victory_Glyph.png/revision/latest?cb=20210307190356" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="131">
-            <span class="image-title">Want</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/1/10/Want_Glyph.png/revision/latest?cb=20210307190405" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="132">
-            <span class="image-title">Weak</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/4/4d/Weak_Glyph.png/revision/latest?cb=20210307190419" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="133">
-            <span class="image-title">Worth</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/2/2e/Worth_Glyph.png/revision/latest?cb=20210307190431" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="134">
-            <span class="image-title">XM</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/7/7b/XM_Glyph.png/revision/latest?cb=20210307190444" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-        <div class="image-wrapper" data-index="135">
-            <span class="image-title">You/Your</span>
-            <img src="https://static.wikia.nocookie.net/ingress/images/5/5d/You-Your_Glyph.png/revision/latest?cb=20210307185540" alt="'' Glyph">
-            <span class="number-badge"></span>
-        </div>
-    </div>
-
-   <!-- Sequence Images Display -->
-   <div class="sequence-images-container"></div>
-
-<footer class="main-footer">
-    <div class="footer-content">
-        <div class="credits">
-            <p>Created by @Pumpkabowo</p>
-            <p>&copy; 2024 All Rights Reserved</p>
-        </div>
-    </div>
-</footer>
-
-    <script src="main.js"></script>
-</body>
-</html>
