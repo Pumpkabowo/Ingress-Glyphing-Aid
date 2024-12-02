@@ -2,7 +2,7 @@ const maxSelections = 5;
 let selectedImages = [];
 let groupedSequences = [];
 
-
+//--------------------------------------------------SPARKLE PAGE EFFECT----------------------------------------------------------------------------------------------SPARKLE PAGE EFFECT
 document.addEventListener('DOMContentLoaded', () => {
     const sparkleContainer = document.createElement('div');
     sparkleContainer.classList.add('sparkle-container');
@@ -22,7 +22,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ------------------------------- Handle image click to show potential sequences
+//------------------------------------------------------------------------------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const sequencesMap = new Map();
+    
+    // Map sentences to their images for quick lookup
+    sequences.forEach(sequence => {
+        sequencesMap.set(sequence.sentence, sequence.images);
+    });
+
+    // Select all images and add click listeners
+    const images = document.querySelectorAll('.sequence-item img');
+
+    images.forEach(image => {
+        image.addEventListener('click', () => {
+            const sequenceName = image.dataset.sequence; // Get the sequence name
+            const relatedImages = sequencesMap.get(sequenceName); // Get all images in the sequence
+
+            if (relatedImages) {
+                const displayContainer = document.querySelector('.sequence-images-container');
+                displayContainer.innerHTML = ''; // Clear previous content
+
+                // Add all related images to the container
+                relatedImages.forEach(imgSrc => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgSrc;
+                    imgElement.alt = `Image from ${sequenceName}`;
+                    imgElement.style.margin = '10px'; // Optional: Styling for spacing
+                    imgElement.style.maxWidth = '100px'; // Optional: Limit image size
+                    displayContainer.appendChild(imgElement);
+                });
+
+                // Scroll to the top (optional)
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    });
+});
+// ------------------------------- Handle image click to show potential sequences------------------------------------------------------------------------
 document.querySelectorAll('.image-wrapper').forEach(wrapper => {
     wrapper.addEventListener('click', () => {
         const clickedImageName = wrapper.querySelector('.image-title').textContent;
@@ -31,12 +68,12 @@ document.querySelectorAll('.image-wrapper').forEach(wrapper => {
     });
 });
 
-// -------------------------------Function to get sequences that contain the selected image
+// -------------------------------Function to get sequences that contain the selected image------------------------------------------------------------------------
 function getSequencesForImage(image) {
     return sequences.filter(seq => seq.images.includes(image));
 }
 
-// --------------------------------Function to display matching sequences
+// --------------------------------Function to display matching sequences------------------------------------------------------------------------
 function displayMatchingSequences(matchingSequences) {
     const sequenceContainer = document.getElementById('sequences');
     sequenceContainer.innerHTML = ''; // Clear previous sequences
@@ -58,7 +95,7 @@ function displayMatchingSequences(matchingSequences) {
     }
 }
 
-// -------------------------------------Function to display images for the selected sequence
+// -------------------------------------Function to display images for the selected sequence------------------------------------------------------------------------
 function showImagesForSequence(imageTitles) {
     const imageContainer = document.querySelector('.image-container');
     imageContainer.innerHTML = ''; // Clear current images
@@ -71,9 +108,11 @@ function showImagesForSequence(imageTitles) {
             imageContainer.appendChild(matchingWrapper.cloneNode(true)); // Add the image to the container
         }
     });
+
+    
 }
 
-//-------------------------------------------- Reset button logic
+//--------------------------------------------RESET BUTTON LOGIC------------------------------------------------------------------------
 document.getElementById('resetButton').addEventListener('click', () => {
     selectedImages = [];
     groupedSequences = [];
@@ -91,7 +130,7 @@ document.getElementById('resetButton').addEventListener('click', () => {
     location.reload();
 });
 
-// Group images into sequences
+//-------------------------------------------------------Group images into sequences------------------------------------------------------------------------
 function groupImages() {
     if (selectedImages.length >= 2) {
         groupedSequences.push([...selectedImages]);
@@ -111,11 +150,12 @@ function updateGroupedSequences() {
         sequenceContainer.appendChild(div);
     });
 }
+
+
 const sequences = [
-    //Level 2 Portals
     {
         sentence: "Abandon - Fear",
-        images: ["Fear", "Abandon"]
+        images: ["Abandon", "Fear"]
     },
     {
         sentence: "Adapt - Technology",
@@ -223,13 +263,10 @@ const sequences = [
         images: ["Portal", "Presence"]
     },
     {
-        sentence: "Pure - Body",
-        images: ["Pure", "Body"]
-    },
-    {
-        sentence: "Pure, Human",
+        sentence: "Pure - Being/Human",
         images: ["Pure", "Being/Human"]
     },
+
     {
         sentence: "Question - Attack/War",
         images: ["Question", "Attack/War"]
@@ -259,18 +296,16 @@ const sequences = [
         images: ["Star", "Nature"]
     },
     {
-        sentence: "You - Adapt",
-        images: ["You", "Adapt"]
+        sentence: "You/Your - Adapt",
+        images: ["You/Your", "Adapt"]
     },
-
-//Level 5 Portals
 {
     sentence: "Abandon - Fear - Together",
     images: ["Anandon", "Fear", "Together"]
 },
 {
-    sentence: "Accept - Being/Human - Weak",
-    images: ["Accept", "Being/Human", "Weak"]
+    sentence: "Accept/Open - Being/Human - Weak",
+    images: ["Accept/Open", "Being/Human", "Weak"]
 },
 {
     sentence: "Advance - Pure - Truth",
@@ -306,7 +341,7 @@ const sequences = [
     images: ["Avoid", "Pure", "Chaos"]
 },
 {
-    sentence: "Begin - New - Struggle",
+    sentence: "Begin - New - Resistance/Struggle",
     images: ["Begin", "New", "Struggle"]
 },
 {
@@ -410,8 +445,8 @@ const sequences = [
     images: ["Harm", "Danger", "Avoid"]
 },
 {
-    sentence: "Help - Us - All ",
-    images: ["Help", "Us", "All"]
+    sentence: "Help - Us/We - All ",
+    images: ["Help", "Us/We", "All"]
 },
 {
     sentence: "Being/Human - Gain - Safety ",
@@ -422,24 +457,24 @@ const sequences = [
     images: ["Being/Human", "Knowledge", "Legacy"]
 },
 {
-    sentence: "Improve - Advance - Present ",
-    images: ["Improve", "Advance", "Present"]
+    sentence: "Improve - Advance - Now/Present ",
+    images: ["Improve", "Advance", "Now/Present"]
 },
 {
     sentence: "Improve - Being/Human - Collective/Shapers ",
     images: ["Improve", "Being/Human", "Collective/Shapers"]
 },
 {
-    sentence: "Inside - XM - Truth ",
-    images: ["Inside", "XM", "Truth"]
+    sentence: "Inside/Not - XM - Truth ",
+    images: ["Inside/Not", "XM", "Truth"]
 },
 {
     sentence: "Interrupt - Enlightened/Enlightenment - Technology ",
     images: ["Interrupt", "Enlightened/Enlightenment", "Technology"]
 },
 {
-    sentence: "Journey - Inside - Soul ",
-    images: ["Journey", "Inside", "Soul"]
+    sentence: "Journey - Inside/Not - Soul ",
+    images: ["Journey", "Inside/Not", "Soul"]
 },
 {
     sentence: "Journey - Link - Portal ",
@@ -494,8 +529,8 @@ const sequences = [
     images: ["React", "Impure", "Civilization"]
 },
 {
-    sentence: "Repair - Portal - Shield ",
-    images: ["Repair", "Portal", "Shield"]
+    sentence: "Recharge/Repair - Portal - Shield ",
+    images: ["Recharge/Repair", "Portal", "Shield"]
 },
 {
     sentence: "Retreat - Search - Safety ",
@@ -526,16 +561,16 @@ const sequences = [
     images: ["Attack/War", "Destroy", "Future"]
 },
 {
-    sentence: "XM - Grow - Creativity ",
-    images: ["XM", "Grow", "Creativity"]
+    sentence: "XM - Grow - Creativity/Idea/Thought ",
+    images: ["XM", "Grow", "Creativity/Idea/Thought"]
 },
 {
     sentence: "XM - Nourish - Civilization ",
     images: ["XM", "Nourish", "Civilization"]
 },
 {
-    sentence: "You - Hide - Chaos ",
-    images: ["You", "Hide", "Chaos"]
+    sentence: "You/Your - Hide - Chaos ",
+    images: ["You/Your", "Hide", "Chaos"]
 },
 
 //Level 7 Portals
@@ -573,7 +608,7 @@ const sequences = [
 },
 { 
     sentence: "Breathe/Live - Nature - Balance/Perfection - Peace/Harmony ",
-    images: ["Breathe/Love","Nature","Balance/Perfection","Peace/Harmony"]
+    images: ["Breathe/Live","Nature","Balance/Perfection","Peace/Harmony"]
 },
 { 
     sentence: "Capture - Fear - Discover - Courage",
@@ -596,8 +631,8 @@ const sequences = [
     images: ["Chaos","Barrier","Collective/Shapers","Portal"]
 },
 { 
-    sentence: "Clear - Mind - Open - Mind",
-    images: ["Clear","Mind","Open","Mind"]
+    sentence: "Clear - Mind - Accept/Open - Mind",
+    images: ["Clear","Mind","Accept/Open","Mind"]
 },
 { 
     sentence: "Clear All - Open All - Discover - Truth",
@@ -608,8 +643,16 @@ const sequences = [
     images: ["Contemplate","Chaos","Before","Link"]
 },
 { 
-    sentence: "Contemplate - Self - Path - Truth",
-    images: ["Contemplate","Self","Path","Truth"]
+    sentence: "Complex - Collective/Shapers - Cilvilization - Strong",
+    images: ["Complex","Collective/Shapers","Cilvilization","Strong"]
+},
+{ 
+    sentence: "Contemplate - Individual/Self - Path - Truth",
+    images: ["Contemplate","Individual/Self","Path","Truth"]
+},
+{ 
+    sentence: "Contemplate - Complex - Collective/Shapers - Civilization",
+    images: ["Contemplate","Complex","Collective/Shaper","Civilization"]
 },
 { 
     sentence: "Courage - Attack/War - Collective/Shapers - Future",
@@ -660,8 +703,8 @@ const sequences = [
     images: ["Enlightened/Enlightenment","Capture","Victory","Together"]
 },
 { 
-    sentence: "Escape - Before - Pure - Death",
-    images: ["Escape","Before","Pure","Death"]
+    sentence: "Escape - Before - Pure - Death/Die",
+    images: ["Escape","Before","Pure","Death/Die"]
 },
 { 
     sentence: "Escape - Simple - Being/Human - Future",
@@ -676,12 +719,12 @@ const sequences = [
     images: ["Follow","Collective/Shapers","Portal","Message"]
 },
 { 
-    sentence: "Forget - Conflict - Accept - Attack/War ",
-    images: ["Forget","Conflict","Accept","Attack/War"]
+    sentence: "Forget - Conflict - Accept/Open - Attack/War ",
+    images: ["Forget","Conflict","Accept/Open","Attack/War"]
 },
 { 
-    sentence: "Peace/Harmony - Path - Nourish - Present",
-    images: ["Peace/Harmony","Path","Nourish","Present"]
+    sentence: "Peace/Harmony - Path - Nourish - Now/Present",
+    images: ["Peace/Harmony","Path","Nourish","Now/Present"]
 },
 { 
     sentence: "Help - Enlightened/Enlightenment - Strong - Victory ",
@@ -712,8 +755,8 @@ const sequences = [
     images: ["Being/Human","Have","Impure","Civilization"]
 },
 { 
-    sentence: "Being/Human - Past - Present - Future",
-    images: ["Being/Human","Past","Present","Future"]
+    sentence: "Being/Human - Past - Now/Present - Future",
+    images: ["Being/Human","Past","Now/Present","Future"]
 },
 { 
     sentence: "Being/Human - Soul - Strong - Pure",
@@ -732,16 +775,16 @@ const sequences = [
     images: ["Improve","Body","Pursue","Journey"]
 },
 { 
-    sentence: "Inside - Mind - Journey - Balance/Perfection",
-    images: ["Inside","Mind","Journey","Balance/Perfection"]
+    sentence: "Inside/Not - Mind - Journey - Balance/Perfection",
+    images: ["Inside/Not","Mind","Journey","Balance/Perfection"]
 },
 { 
     sentence: "Interrupt - Message - Gain - Advance",
     images: ["Interrupt","Message","Gain","Advance"]
 },
 { 
-    sentence: "Journey - Inside - Improve - Soul",
-    images: ["Journey","Inside","Improve","Soul"]
+    sentence: "Journey - Inside/Not - Improve - Soul",
+    images: ["Journey","Inside/Not","Improve","Soul"]
 },
 { 
     sentence: "Knowledge - Help - Gain - Victory",
@@ -772,8 +815,8 @@ const sequences = [
     images: ["Link","Key","Field","Success"]
 },
 { 
-    sentence: "Live Again - Die - Again - Evolution/Progress/Success",
-    images: ["Live Again","Die","Again","Evolution/Progress/Success"]
+    sentence: " Live/Again/Reincarnate - Death/Die - Again - Evolution/Progress/Success",
+    images: ["Live/Again/Reincarnate","Death/Die","Again","Evolution/Progress/Success"]
 },
 { 
     sentence: "Lose - Danger - Gain - Safety",
@@ -781,7 +824,7 @@ const sequences = [
 },
 { 
     sentence: "Nourish - XM - Create - Creativity/Idea/Thought",
-    images: ["Nourish","XM","Create","Creativity/Idea/Thought"]
+    images: ["Nourish","xm","Create","Creativity/Idea/Thought"]
 },
 { 
     sentence: "N'ZEER - Legacy - Create - Future",
@@ -801,23 +844,23 @@ const sequences = [
 },
 { 
     sentence: "Open All - Link - Create - Star",
-    images: ["OpenAll","Link","Create","Star"]
+    images: ["Open All","Link","Create","Star"]
 },
 { 
-    sentence: "Past - Again - Present - Again",
-    images: ["Past","Again","Present","Again"]
+    sentence: "Past - Again - Now/Present - Again",
+    images: ["Past","Again","Now/Present","Again"]
 },
 { 
     sentence: "Path - Restraint - Strong - Safety",
     images: ["Path","Restraint","Strong","Safety"]
 },
 { 
-    sentence: "Portal - Change - Civilization - Die",
-    images: ["Portal","Change","Civilization","Die"]
+    sentence: "Portal - Change - Civilization - Death/Die",
+    images: ["Portal","Change","Civilization","Death/Die"]
 },
 { 
-    sentence: "Portal - Die - Civilization - End",
-    images: ["Portal","Die","Civilization","End"]
+    sentence: "Portal - Death/Die - Civilization - End",
+    images: ["Portal","Death/Die","Civilization","End"]
 },
 { 
     sentence: "Portal - Have - Truth - Data",
@@ -844,8 +887,8 @@ const sequences = [
     images: ["Search","Truth","Save","Civilization"]
 },
 { 
-    sentence: "Search - XM - Distance - Destination",
-    images: ["Search","XM","Distance","Destination"]
+    sentence: "Search - XM - Distance/Outside - Destination",
+    images: ["Search","XM","Distance/Outside","Destination"]
 },
 { 
     sentence: "See - Truth - See - Future",
@@ -868,8 +911,8 @@ const sequences = [
     images: ["Collective/Shapers","Mind","Complex","Peace/Harmony"]
 },
 { 
-    sentence: "Collective/Shapers - Past - Present - Future",
-    images: ["Collective/.Shapers","Past","Present","Future"]
+    sentence: "Collective/Shapers - Past - Now/Present - Future",
+    images: ["Collective/.Shapers","Past","Now/Present","Future"]
 },
 { 
     sentence: "Collective/Shapers - See - Potential - Evolution/Progress/Success",
@@ -896,8 +939,8 @@ const sequences = [
     images: ["Simple","Truth","Breathe","Nature"]
 },
 { 
-    sentence: "Soul - Rebel - Being/Human - Die",
-    images: ["Soul","Rebel","Being/Human","Die"]
+    sentence: "Soul - Rebel - Being/Human - Death/Die",
+    images: ["Soul","Rebel","Being/Human","Death/Die"]
 },
 { 
     sentence: "Stay - Together - Defend - Truth",
@@ -940,16 +983,16 @@ const sequences = [
     images: ["Weak","Portal","Weak","Field"]
 },
 { 
-    sentence: "XM - Die - Chaos - Live",
-    images: ["XM","Die","Chaos","Live"]
+    sentence: "XM - Death/Die - Chaos - Live",
+    images: ["XM","Death/Die","Chaos","Live"]
 },
 { 
-    sentence: "XM - Nourish - Strong - Creativity",
-    images: ["XM","Nourish","Strong","Creativity"]
+    sentence: "XM - Nourish - Strong - Creativity/Idea/Thought",
+    images: ["XM","Nourish","Strong","Creativity/Idea/Thought"]
 },
 { 
-    sentence: "XM - Share - Your - Creativity",
-    images: ["XM","Share","Your","Creativity"]
+    sentence: "XM - Share - You/Your - Creativity/Idea/Thought",
+    images: ["XM","Share","You/Your","Creativity/Idea/Thought"]
 },
 //Level 8 Portals
 { 
@@ -958,23 +1001,13 @@ const sequences = [
 },
 ];
 
-// Add event listener for image click to show sequences and move image to the top
-document.querySelectorAll('.image-wrapper').forEach(wrapper => {
-    wrapper.addEventListener('click', () => {
-        const clickedImageTitle = wrapper.querySelector('.image-title').textContent;
-        const matchingSequences = getSequencesForImage(clickedImageTitle);
-        displayMatchingSequences(matchingSequences);
-        moveImageToTop(wrapper);
-    });
-});
 
-// Function to move the clicked image to the top
-function moveImageToTop(clickedImage) {
-    const imageContainer = document.querySelector('.image-container');
-    imageContainer.prepend(clickedImage); // Prepend the clicked image to the top of the container
-}
 
-// Function to filter images based on search term
+
+
+
+
+// ------------------------------------Function to filter images based on search term------------------------------------------------------------------------
 document.getElementById('searchInput').addEventListener('input', filterImages);
 
 // Function to filter images
@@ -994,7 +1027,7 @@ function filterImages() {
 
 let selectedFilter = null;
 
-// Handle sidebar filter clicks
+//------------------------------------Handle sidebar filter clicks------------------------------------------------------------------------
 document.querySelectorAll('.filter-btn').forEach(button => {
     button.addEventListener('click', () => {
         selectedFilter = parseInt(button.getAttribute('data-length'), 10); // Get the selected filter value
@@ -1012,7 +1045,7 @@ document.querySelectorAll('.filter-btn').forEach(button => {
     });
 });
 
-// Filter sequences by length
+//------------------------------------Filter sequences by length------------------------------------------------------------------------
 function filterSequencesByLength(sequences, length) {
     return sequences.filter(seq => seq.images.length === length);
 }
@@ -1077,7 +1110,7 @@ function displayMatchingSequences(matchingSequences) {
         sequenceContainer.appendChild(noResults);
     }
 }
-// Function to display matching sequences with a "Show Gif" button
+//------------------------------------Function to display matching sequences with a "Show Gif" button------------------------------------------------------------------------
 function displayMatchingSequences(matchingSequences) {
     const sequenceContainer = document.getElementById('sequences');
     sequenceContainer.innerHTML = ''; // Clear previous sequences
@@ -1108,7 +1141,7 @@ function displayMatchingSequences(matchingSequences) {
                 }
             });
 
-            // Create the "Show Gif" button
+            //------------------------------------------------------------------------Create the "Show Gif" button
             const gifButton = document.createElement('button');
             gifButton.textContent = 'Show Gif';
             gifButton.classList.add('show-gif-button');
@@ -1142,7 +1175,7 @@ function displayMatchingSequences(matchingSequences) {
         sequenceContainer.appendChild(noResults);
     }
 }
-
+//------------------------------------------------------------------------ BACK TO TOP OF PAGE
 document.addEventListener('DOMContentLoaded', () => {
     // Select all images within the page
     const images = document.querySelectorAll('img'); // Adjust selector to target the specific images you want
@@ -1158,5 +1191,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+//---------------------------------------------------------SIDE BAR DISSAPEARANCE------------------------------------------------------------------------ 
+document.addEventListener('DOMContentLoaded', () => {
+    const filterContainer = document.querySelector('.sidebar');
+    let lastScrollTop = 0;
 
+    window.addEventListener('scroll', () => {
+        const currentScrollTop = window.scrollY;
+
+        if (currentScrollTop > lastScrollTop) {
+    
+            // User is scrolling down
+            filterContainer.style.opacity = '0';
+            filterContainer.style.pointerEvents = 'none'; // Disable interaction when hidden
+        } else {
+            // User is scrolling up
+            filterContainer.style.opacity = '1';
+            filterContainer.style.pointerEvents = 'auto'; // Enable interaction when visible
+        }
+
+        lastScrollTop = currentScrollTop;
+    });
+});
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
